@@ -1,0 +1,14 @@
+.superpowers/
+.scratch/
+.env
+.env.*
+!.env.example
+node_modules/
+.next/
+.vercel/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+*.apk
+CLAUDE.local.md
