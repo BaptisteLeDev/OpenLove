@@ -11,7 +11,7 @@ Vocabulary: [`CONTEXT.md`](CONTEXT.md).
                             ├──> /api/* (Next.js route handlers) ──> Supabase (Postgres, Auth, Storage, Realtime)
  Android (Compose) ─Bearer──┘            │                      ──> FCM (push web + Android)
                                          └──> TMDB, Nominatim, GIF provider (one client each)
- Web only: Supabase Realtime (chat, typing) with the user's JWT, RLS-scoped.
+ Web only: Supabase Realtime signals (new message id, typing), user JWT, RLS-scoped; content refetched via /api/chat.
 ```
 
 - Android never talks to Supabase: `/api` is the only door ([ADR 0001](docs/decisions/0001-monorepo-api-only-backend.md)).
@@ -35,7 +35,7 @@ web/
     i18n/                       next-intl, messages/fr.json
 android/                        app/ (screens per feature), core/ (api client, auth, theme)
 contracts/                      generated fixtures, decoded by Android contract tests
-design/tokens.json              M3 tokens (seed color -> scheme), generates CSS vars + Compose theme
+design/tokens.json              typography, shape, default seed; scheme at runtime via `/api/theme`
 supabase/migrations/            SQL, RLS on every table
 ```
 
@@ -66,11 +66,12 @@ Business rule needing a DB to test = rule leaked out of `domain/`.
 
 | Concern | Choice | ADR |
 |---|---|---|
-| Design system | Material 3 tokens from one `design/tokens.json`; Tailwind on web, Compose M3 on Android | [0003](docs/decisions/0003-material3-shared-tokens.md) |
+| Design system | M3 typography/shape/default seed in `design/tokens.json`; scheme computed server-side from the Couple's seed, served by `/api/theme`; Tailwind on web, Compose M3 on Android | [0003](docs/decisions/0003-material3-shared-tokens.md) |
 | Push | FCM for web and Android, one `notify(recipient, payload)` | [0004](docs/decisions/0004-fcm-single-push-provider.md) |
 | Mobile login | QR pairing from `/settings` (instance URL + one-time code), manual fallback | [0005](docs/decisions/0005-qr-pairing-mobile.md) |
 | Media | `MediaStore` port: Supabase Storage (private bucket, signed URLs); Google Drive later | [0006](docs/decisions/0006-mediastore-port.md) |
-| Chat realtime | Web: Supabase Realtime. Android: FCM wake + 3 s polling while chat open | [0001](docs/decisions/0001-monorepo-api-only-backend.md) |
+| Chat realtime | Web: Supabase Realtime signal only (message id, no content), refetch via `/api/chat`. Android: FCM wake + fetch, 3 s polling while chat open | [0001](docs/decisions/0001-monorepo-api-only-backend.md) |
+| Couple bootstrap | First run `/setup` creates partner_a + Couple; one-time invite link for partner_b (TTL, single use, rate limited); then public signup closed | - |
 | Chat crypto | AES-256-GCM at rest, server key. Documented as at-rest, NOT E2E | - |
 | Config | One Zod env schema; `/setup` renders checklist (Vercel, Supabase, Firebase, keys) | - |
 | i18n | next-intl / `strings.xml`, FR only in v1 | - |
@@ -82,7 +83,7 @@ Business rule needing a DB to test = rule leaked out of `domain/`.
 |---|---|---|
 | S1 | Identity guessed from email prefix / metadata | `couple_members` table: user UUID -> `partner_a`/`partner_b` |
 | S2 | Unvalidated `request.json()` | `withContract` everywhere |
-| S3 | CSP `unsafe-inline`/`unsafe-eval` | nonce via middleware |
+| S3 | CSP `unsafe-inline`/`unsafe-eval` | nonce via `proxy.ts` (Next 16), all pages dynamic |
 | S4 | ICS fetch SSRF (DNS rebinding, CGNAT) | pinned lookup, block private + `100.64/10` |
 | S5 | Rate limiter per-isolate, hourly cap dead | Postgres-backed limiter, separate windows |
 | S6 | Push token upsert on endpoint = hijack | unique `(user_id, token)` |

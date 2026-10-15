@@ -4,9 +4,8 @@
 [![Statut : pré-code](https://img.shields.io/badge/statut-pr%C3%A9--code-lightgrey)](#statut)
 [![Contributions bienvenues](https://img.shields.io/badge/contributions-bienvenues-brightgreen)](CONTRIBUTING.md)
 [![Code de conduite](https://img.shields.io/badge/code%20de%20conduite-Contributor%20Covenant-blue)](CODE_OF_CONDUCT.md)
-[![Next.js](https://img.shields.io/badge/Next.js-App%20Router-black?logo=nextdotjs)](ARCHITECTURE.md)
-[![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20RLS-3ECF8E?logo=supabase&logoColor=white)](ARCHITECTURE.md)
-[![Android](https://img.shields.io/badge/Android-Compose%20M3-3DDC84?logo=android&logoColor=white)](ARCHITECTURE.md)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 
 > Une application de couple propre et auto-hébergeable : chat temps réel, surprises et lettres
 > verrouillées dans le temps, collections partagées et calendrier. Web (PWA) et Android, une
@@ -91,9 +90,8 @@ Lis d'abord [CONTRIBUTING.md](CONTRIBUTING.md). La participation est régie par 
 [![Status: pre-code](https://img.shields.io/badge/status-pre--code-lightgrey)](#status)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen)](CONTRIBUTING.md)
 [![Code of Conduct](https://img.shields.io/badge/code%20of%20conduct-Contributor%20Covenant-blue)](CODE_OF_CONDUCT.md)
-[![Next.js](https://img.shields.io/badge/Next.js-App%20Router-black?logo=nextdotjs)](ARCHITECTURE.md)
-[![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%2B%20RLS-3ECF8E?logo=supabase&logoColor=white)](ARCHITECTURE.md)
-[![Android](https://img.shields.io/badge/Android-Compose%20M3-3DDC84?logo=android&logoColor=white)](ARCHITECTURE.md)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 
 > A clean, self-hostable love app for couples: realtime chat, time-locked surprises and letters,
 > shared collections and calendar. Web (PWA) and Android, one instance per couple.

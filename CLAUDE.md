@@ -6,8 +6,8 @@ Android ref = branch `mobile`). Source = code base to mine, NOT to copy: rewrite
 
 ## Status
 
-Pre-code. No `git init` yet. Plan: `.superpowers/2026-10-15-openlove-plan.md`. Epics/sub-issues
-drafted there, published to GitHub on go (repo `OWNER/OpenLove`, public, Project v2).
+Pre-code. Epics E0-E14 + sub-issues on GitHub (Project v2 "OpenLove"), start = E0.1.
+Plan (local, gitignored): `.superpowers/2026-10-15-openlove-plan.md`.
 
 ## Read first
 
@@ -23,7 +23,7 @@ drafted there, published to GitHub on go (repo `OWNER/OpenLove`, public, Project
 | `web/` | Next.js App Router: UI + `/api/*` (the ONLY backend, Android included) |
 | `android/` | Kotlin, Compose Material3, Ktor, kotlinx.serialization, manual DI, minSdk 26 |
 | `contracts/` | JSON fixtures generated from Zod (`web/src/shared/contracts`), decoded by Android tests |
-| `design/tokens.json` | M3 color/typo tokens, one source -> CSS vars (web) + `ColorScheme` (Android) |
+| `design/tokens.json` | M3 typography, shape, default seed. Color scheme computed at runtime from the Couple's seed, served by `/api/theme` |
 | `supabase/` | migrations, seed (Supabase = single data path, no memory fallback) |
 
 No pnpm workspace: `web/` = pnpm project, `android/` = Gradle project, side by side.
@@ -61,7 +61,7 @@ features + UX), EN locale. Changelog = section of `/settings`, not a page.
 ## Tools
 
 - Material: Context7 for Compose/Tailwind docs. Google Design MCP (`design.googleapis.com/mcp`,
-  needs Google Cloud auth) for `generate_color_scheme`, icon search -> feeds `design/tokens.json`.
+  needs Google Cloud auth) for icon search and previewing the default seed scheme (`generate_color_scheme`).
 - UI acceptance: Playwright (web), Compose UI tests (Android).
 
 ## Agent skills
