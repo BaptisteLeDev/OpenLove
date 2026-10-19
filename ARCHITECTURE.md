@@ -77,6 +77,7 @@ Business rule needing a DB to test = rule leaked out of `domain/`.
 | i18n | next-intl / `strings.xml`, FR only in v1 | - |
 | Deploy | Vercel button (v1). Docker/VPS after all features + UX | - |
 | Toolchain | TS 7, Oxlint (type-aware + security jsPlugins), Oxfmt, React Compiler, ktlint | [0007](docs/decisions/0007-toolchain.md) |
+| Android JSON | Prod ignores unknown keys (old APKs survive new fields); contract tests strict | [0008](docs/decisions/0008-android-json-tolerant-prod.md) |
 
 ## 6. Security fixes carried from the source audit
 
