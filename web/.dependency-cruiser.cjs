@@ -6,15 +6,8 @@ module.exports = {
     {
       name: "domain-imports-only-domain-and-contracts",
       severity: "error",
-      from: { path: "features/([^/]+)/domain/", pathNot: "\\.test\\." },
-      // color lib = pure math mandated by ADR 0003, no IO
-      to: {
-        pathNot: [
-          "features/$1/domain/",
-          "shared/contracts/",
-          "@material/material-color-utilities/",
-        ],
-      },
+      from: { path: "features/([^/]+)/domain/" },
+      to: { pathNot: ["features/$1/domain/", "shared/contracts/"] },
     },
     {
       name: "ui-never-reaches-server",
