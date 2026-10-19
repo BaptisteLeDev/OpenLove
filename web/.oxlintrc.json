@@ -1,0 +1,37 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "react", "jsx-a11y", "nextjs"],
+  "jsPlugins": ["eslint-plugin-security", "eslint-plugin-no-unsanitized"],
+  "categories": { "correctness": "error" },
+  "options": { "typeAware": true },
+  "rules": {
+    "security/detect-buffer-noassert": "warn",
+    "security/detect-child-process": "warn",
+    "security/detect-disable-mustache-escape": "warn",
+    "security/detect-eval-with-expression": "warn",
+    "security/detect-new-buffer": "warn",
+    "security/detect-no-csrf-before-method-override": "warn",
+    "security/detect-non-literal-fs-filename": "warn",
+    "security/detect-non-literal-regexp": "warn",
+    "security/detect-non-literal-require": "warn",
+    "security/detect-object-injection": "warn",
+    "security/detect-possible-timing-attacks": "warn",
+    "security/detect-pseudoRandomBytes": "warn",
+    "security/detect-unsafe-regex": "warn",
+    "security/detect-bidi-characters": "warn",
+    "security/detect-invisible-characters": "warn",
+    "no-unsanitized/property": "error",
+    "no-unsanitized/method": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*.tsx"],
+      "rules": { "react/jsx-no-literals": ["error", { "noStrings": true, "ignoreProps": true }] }
+    },
+    {
+      "files": ["src/**/*.test.tsx"],
+      "rules": { "react/jsx-no-literals": "off" }
+    }
+  ],
+  "ignorePatterns": [".next/**", "next-env.d.ts"]
+}
