@@ -6,7 +6,8 @@ Android ref = branch `mobile`). Source = code base to mine, NOT to copy: rewrite
 
 ## Status
 
-Pre-code. Epics E0-E14 + sub-issues on GitHub (Project v2 "OpenLove"), start = E0.1.
+Epic E0 done (web + android skeletons, CI gates). Epics E1-E14 + sub-issues on GitHub
+(Project v2 "OpenLove"): next epic from the board.
 Plan (local, gitignored): `.superpowers/2026-10-15-openlove-plan.md`.
 
 ## Read first
@@ -28,7 +29,7 @@ Plan (local, gitignored): `.superpowers/2026-10-15-openlove-plan.md`.
 
 No pnpm workspace: `web/` = pnpm project, `android/` = Gradle project, side by side.
 
-## Commands (planned, wired in Epic E0)
+## Commands
 
 ```bash
 cd web && pnpm dev | pnpm build | pnpm type-check | pnpm lint | pnpm test | pnpm arch-test | pnpm knip
@@ -37,7 +38,7 @@ cd android && ./gradlew testDebugUnitTest lintDebug ktlintCheck
 supabase start                # local Postgres/Auth/Storage for dev
 ```
 
-Done = `type-check && lint && test && arch-test` green (web) + `testDebugUnitTest` green (android).
+Done = `type-check && lint && test && arch-test && knip` green (web) + `testDebugUnitTest` green (android).
 
 ## Hard rules
 

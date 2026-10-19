@@ -1,3 +1,5 @@
+// shortcut: mcu pinned 0.3.0, 0.4.0 ESM lacks file extensions under Node;
+// upgrade when fixed upstream
 import {
   argbFromHex,
   type DynamicScheme,
