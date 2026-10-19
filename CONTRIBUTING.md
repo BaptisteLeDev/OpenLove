@@ -37,14 +37,25 @@ Pas sûr que ça colle ? Ouvre d'abord une issue. Une courte discussion évite u
 
 ## Mise en place
 
-Prérequis : Node.js LTS, pnpm, JDK 17+ et Android Studio (Android uniquement), Docker (pour Supabase),
-Supabase CLI.
+Prérequis : Node.js LTS, pnpm, JDK 17+ et Android Studio (Android uniquement), Docker (pour Supabase).
 
 ```bash
-supabase start                      # Postgres, Auth, Storage en local
+npx supabase@2.121.0 start          # Postgres, Auth, Storage en local (Docker)
 cd web && pnpm install && pnpm dev
 cd android && ./gradlew testDebugUnitTest lintDebug ktlintCheck
 ```
+
+Supabase local : migrations dans `supabase/migrations/`, appliquées par `start` et
+`npx supabase@2.121.0 db reset`. Pour pointer le web dessus et créer les comptes de dev
+(`partner_a@example.com`, `partner_b@example.com`, `stranger@example.com`, mot de passe
+`openlove-dev`) :
+
+```bash
+npx supabase@2.121.0 status -o env --override-name api.url=SUPABASE_URL,auth.anon_key=SUPABASE_ANON_KEY,auth.service_role_key=SUPABASE_SERVICE_ROLE_KEY > web/.env.local
+cd web && pnpm seed                 # idempotent, refuse une URL non locale
+```
+
+Sans Supabase local, les tests RLS (`web/test/rls.test.ts`) sont ignorés avec un avertissement.
 
 ## Fork et pull request
 
@@ -130,14 +141,25 @@ Read these before you open a PR. They are rules, not preferences:
 
 ## Development setup
 
-Prerequisites: Node.js LTS, pnpm, JDK 17+ and Android Studio (Android only), Docker (for Supabase),
-Supabase CLI.
+Prerequisites: Node.js LTS, pnpm, JDK 17+ and Android Studio (Android only), Docker (for Supabase).
 
 ```bash
-supabase start                      # local Postgres, Auth, Storage
+npx supabase@2.121.0 start          # local Postgres, Auth, Storage (Docker)
 cd web && pnpm install && pnpm dev
 cd android && ./gradlew testDebugUnitTest lintDebug ktlintCheck
 ```
+
+Local Supabase: migrations live in `supabase/migrations/`, applied by `start` and
+`npx supabase@2.121.0 db reset`. To point the web app at it and create the dev accounts
+(`partner_a@example.com`, `partner_b@example.com`, `stranger@example.com`, password
+`openlove-dev`):
+
+```bash
+npx supabase@2.121.0 status -o env --override-name api.url=SUPABASE_URL,auth.anon_key=SUPABASE_ANON_KEY,auth.service_role_key=SUPABASE_SERVICE_ROLE_KEY > web/.env.local
+cd web && pnpm seed                 # idempotent, refuses a non-local URL
+```
+
+Without local Supabase, the RLS tests (`web/test/rls.test.ts`) are skipped with a warning.
 
 ## Fork and pull request
 

@@ -12,7 +12,8 @@
     "test": "vitest run",
     "arch-test": "depcruise src --config .dependency-cruiser.cjs",
     "knip": "knip",
-    "contracts": "node scripts/contracts.ts"
+    "contracts": "node scripts/contracts.ts",
+    "seed": "node scripts/seed.ts"
   },
   "dependencies": {
     "@material/material-color-utilities": "0.3.0",
