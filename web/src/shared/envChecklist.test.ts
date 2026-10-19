@@ -21,6 +21,11 @@ test("undefined and empty string are missing", () => {
   });
 });
 
+test("an absent optional var is ok", () => {
+  const result = checkEnv(z.object({ OPT: z.string().optional() }), {});
+  expect(result).toEqual([{ key: "OPT", status: "ok" }]);
+});
+
 test("present but failing the schema is invalid", () => {
   expect(checkEnv(schema, { URL: "nope", TOKEN: "x" })).toEqual([
     { key: "URL", status: "invalid" },

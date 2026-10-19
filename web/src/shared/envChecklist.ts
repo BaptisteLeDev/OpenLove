@@ -9,7 +9,9 @@ export function checkEnv(
 ): EnvCheckItem[] {
   return Object.entries(schema.shape).map(([key, field]) => {
     const value = source[key];
-    if (value === undefined || value === "") return { key, status: "missing" };
+    if (value === undefined || value === "") {
+      return { key, status: field.safeParse(undefined).success ? "ok" : "missing" };
+    }
     return { key, status: field.safeParse(value).success ? "ok" : "invalid" };
   });
 }
