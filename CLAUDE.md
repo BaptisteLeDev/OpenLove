@@ -33,7 +33,7 @@ No pnpm workspace: `web/` = pnpm project, `android/` = Gradle project, side by s
 ```bash
 cd web && pnpm dev | pnpm build | pnpm type-check | pnpm lint | pnpm test | pnpm arch-test | pnpm knip
 cd web && pnpm contracts      # regenerate contracts/*.json from Zod
-cd android && ./gradlew testDebugUnitTest lintDebug
+cd android && ./gradlew testDebugUnitTest lintDebug ktlintCheck
 supabase start                # local Postgres/Auth/Storage for dev
 ```
 

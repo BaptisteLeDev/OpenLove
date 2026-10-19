@@ -53,7 +53,7 @@ installation Docker/VPS, locale anglaise.
 | Données | Supabase (Postgres + RLS, Auth, Storage, Realtime) |
 | Push | Firebase Cloud Messaging |
 | Android | Kotlin + Jetpack Compose Material 3 + Ktor |
-| Outillage | pnpm, Vitest, Playwright, ESLint, Biome, dependency-cruiser, knip |
+| Outillage | pnpm, TypeScript 7, Vitest, Playwright, Oxlint, Oxfmt, dependency-cruiser, knip, ktlint |
 
 ## Démarrage rapide (sans terminal)
 
@@ -135,7 +135,7 @@ install, English locale.
 | Data | Supabase (Postgres + RLS, Auth, Storage, Realtime) |
 | Push | Firebase Cloud Messaging |
 | Android | Kotlin + Jetpack Compose Material 3 + Ktor |
-| Tooling | pnpm, Vitest, Playwright, ESLint, Biome, dependency-cruiser, knip |
+| Tooling | pnpm, TypeScript 7, Vitest, Playwright, Oxlint, Oxfmt, dependency-cruiser, knip, ktlint |
 
 ## Quick start (no terminal)
 

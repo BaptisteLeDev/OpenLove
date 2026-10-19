@@ -43,7 +43,7 @@ Supabase CLI.
 ```bash
 supabase start                      # Postgres, Auth, Storage en local
 cd web && pnpm install && pnpm dev
-cd android && ./gradlew testDebugUnitTest lintDebug
+cd android && ./gradlew testDebugUnitTest lintDebug ktlintCheck
 ```
 
 Les commandes sont câblées dans l'Epic E0. D'ici là, le projet n'a pas encore de code exécutable.
@@ -138,7 +138,7 @@ Supabase CLI.
 ```bash
 supabase start                      # local Postgres, Auth, Storage
 cd web && pnpm install && pnpm dev
-cd android && ./gradlew testDebugUnitTest lintDebug
+cd android && ./gradlew testDebugUnitTest lintDebug ktlintCheck
 ```
 
 Commands are wired in Epic E0. Until then, the project has no runnable code yet.
