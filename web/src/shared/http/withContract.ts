@@ -1,13 +1,12 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
-import type { User } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { env } from "@/shared/env";
-import { getPartner } from "@/shared/supabase/server";
+import { getPartner, type Partner } from "@/shared/supabase/server";
 
 type Auth = "partner" | "cron" | "public";
-type Ctx<A extends Auth> = A extends "partner" ? { user: User } : object;
+type Ctx<A extends Auth> = A extends "partner" ? { partner: Partner } : object;
 type Schema = z.ZodType;
 
 function fail(status: number, code: string, message: string) {
@@ -20,15 +19,27 @@ function bearer(req: Request) {
   return /^Bearer (.+)$/.exec(req.headers.get("authorization") ?? "")?.[1];
 }
 
-async function authorize(req: Request, mode: Auth): Promise<{ user?: User } | null> {
+// S13: cookies ride along cross-site, so cookie mutations must prove same origin.
+function sameOrigin(req: Request) {
+  const origin = req.headers.get("origin");
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+  return !!origin && !!host && URL.parse(origin)?.host === host;
+}
+
+async function authorize(req: Request, mode: Auth): Promise<Response | { partner?: Partner }> {
   if (mode === "public") return {};
   const token = bearer(req);
   if (mode === "partner") {
-    const user = await getPartner(token);
-    return user && { user };
+    const mutation = req.method !== "GET" && req.method !== "HEAD";
+    if (!token && mutation && !sameOrigin(req)) return fail(403, "forbidden", "origin mismatch");
+    const who = await getPartner(token);
+    if (who.ok) return { partner: who.partner };
+    return who.code === "unauthorized"
+      ? fail(401, "unauthorized", "unauthorized")
+      : fail(403, "not_couple_member", "not a couple member");
   }
   const ok = token && timingSafeEqual(digest(token), digest(env().CRON_SECRET));
-  return ok ? {} : null;
+  return ok ? {} : fail(401, "unauthorized", "unauthorized");
 }
 
 async function readInput(req: Request): Promise<unknown> {
@@ -47,7 +58,7 @@ export function withContract<
   return async (req: Request): Promise<Response> => {
     try {
       const who = await authorize(req, opts.auth);
-      if (!who) return fail(401, "unauthorized", "unauthorized");
+      if (who instanceof Response) return who;
       const parsed = opts.input ? opts.input.safeParse(await readInput(req)) : undefined;
       if (parsed && !parsed.success) return fail(400, "validation_failed", "invalid input");
       const out = opts.output.safeParse(await handler(parsed?.data as z.output<I>, who as Ctx<A>));

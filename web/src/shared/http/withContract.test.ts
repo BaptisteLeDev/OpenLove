@@ -60,31 +60,89 @@ test("thrown error -> 500 internal, no stack", async () => {
   expect(await res.text()).not.toContain("boom");
 });
 
+const partner = { userId: "u1", coupleId: "c1", role: "partner_a" as const };
+const member = { ok: true as const, partner };
+const okRoute = () => withContract({ output: z.object({}), auth: "partner" }, () => ({}));
+
 test("partner without token -> 401 unauthorized", async () => {
-  vi.mocked(getPartner).mockResolvedValue(null);
-  const route = withContract({ output: z.object({}), auth: "partner" }, () => ({}));
-  const res = await route(new Request("http://x/api/t"));
+  vi.mocked(getPartner).mockResolvedValue({ ok: false, code: "unauthorized" });
+  const res = await okRoute()(new Request("http://x/api/t"));
   expect(res.status).toBe(401);
   expect((await res.json()).error.code).toBe("unauthorized");
 });
 
-test("partner with valid token -> handler receives user", async () => {
-  vi.mocked(getPartner).mockResolvedValue({ id: "u1" } as never);
+test("valid JWT without membership -> 403 not_couple_member", async () => {
+  vi.mocked(getPartner).mockResolvedValue({ ok: false, code: "not_couple_member" });
+  const res = await okRoute()(
+    new Request("http://x/api/t", { headers: { Authorization: "Bearer t" } }),
+  );
+  expect(res.status).toBe(403);
+  expect((await res.json()).error.code).toBe("not_couple_member");
+});
+
+test("partner ctx -> handler receives { partner }", async () => {
+  vi.mocked(getPartner).mockResolvedValue(member);
   const route = withContract(
-    { output: z.object({ id: z.string() }), auth: "partner" },
-    (_in, { user }) => ({ id: user.id }),
+    { output: z.object({ coupleId: z.string() }), auth: "partner" },
+    (_in, ctx) => ({ coupleId: ctx.partner.coupleId }),
   );
   const res = await route(
     new Request("http://x/api/t", { headers: { Authorization: "Bearer t" } }),
   );
-  expect(await res.json()).toEqual({ data: { id: "u1" } });
+  expect(await res.json()).toEqual({ data: { coupleId: "c1" } });
   expect(getPartner).toHaveBeenCalledWith("t");
+});
+
+test("cookie POST with foreign Origin -> 403 forbidden, nothing called", async () => {
+  const handler = vi.fn(() => ({}));
+  const route = withContract({ output: z.object({}), auth: "partner" }, handler);
+  const res = await route(post({}, { Origin: "https://evil.example", Host: "x" }));
+  expect(res.status).toBe(403);
+  expect(await res.json()).toEqual({ error: { code: "forbidden", message: "origin mismatch" } });
+  expect(handler).not.toHaveBeenCalled();
+  expect(getPartner).not.toHaveBeenCalled();
+});
+
+test("cookie POST without Origin -> 403 forbidden", async () => {
+  const res = await okRoute()(post({}, { Host: "x" }));
+  expect(res.status).toBe(403);
+  expect((await res.json()).error.code).toBe("forbidden");
+});
+
+test("cookie POST with same Origin -> 200", async () => {
+  vi.mocked(getPartner).mockResolvedValue(member);
+  expect((await okRoute()(post({}, { Origin: "http://x", Host: "x" }))).status).toBe(200);
+});
+
+test("x-forwarded-host wins over host", async () => {
+  vi.mocked(getPartner).mockResolvedValue(member);
+  const headers = {
+    Origin: "https://app.example",
+    Host: "localhost:3000",
+    "X-Forwarded-Host": "app.example",
+  };
+  expect((await okRoute()(post({}, headers))).status).toBe(200);
+});
+
+test("Bearer POST without Origin -> 200 (S13 exempt)", async () => {
+  vi.mocked(getPartner).mockResolvedValue(member);
+  expect((await okRoute()(post({}, { Authorization: "Bearer t" }))).status).toBe(200);
+});
+
+test("cookie GET without Origin -> 200", async () => {
+  vi.mocked(getPartner).mockResolvedValue(member);
+  expect((await okRoute()(new Request("http://x/api/t"))).status).toBe(200);
+});
+
+test("public POST with foreign Origin -> 200", async () => {
+  const route = withContract({ output: z.object({}), auth: "public" }, () => ({}));
+  expect((await route(post({}, { Origin: "https://evil.example", Host: "x" }))).status).toBe(200);
 });
 
 test("public handler ctx has no user", () => {
   withContract({ output: z.object({}), auth: "public" }, (_in, ctx) => {
-    // @ts-expect-error ctx.user only exists for partner routes
-    expect(ctx.user).toBeUndefined();
+    // @ts-expect-error ctx.partner only exists for partner routes
+    expect(ctx.partner).toBeUndefined();
     return {};
   });
 });

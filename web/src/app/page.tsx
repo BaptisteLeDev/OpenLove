@@ -1,11 +1,23 @@
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 
-export default function HomePage() {
-  const t = useTranslations("app");
+import { signOut } from "@/features/couple/server/auth";
+import { getMilestone } from "@/features/home/server/getMilestone";
+import { Milestone } from "@/features/home/ui/Milestone";
+import { getPartner } from "@/shared/supabase/server";
+
+export default async function HomePage() {
+  const result = await getPartner();
+  if (!result.ok) redirect("/login");
+  const t = await getTranslations("home");
   return (
-    <main className="flex min-h-dvh flex-col items-center justify-center gap-2 p-6">
-      <h1 className="text-headline-large">{t("name")}</h1>
-      <p>{t("tagline")}</p>
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-6 p-6">
+      <Milestone value={await getMilestone(result.partner.coupleId)} />
+      <form action={signOut}>
+        <button type="submit" className="rounded-full border px-4 py-2">
+          {t("logout")}
+        </button>
+      </form>
     </main>
   );
 }

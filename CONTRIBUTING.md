@@ -37,16 +37,33 @@ Pas sûr que ça colle ? Ouvre d'abord une issue. Une courte discussion évite u
 
 ## Mise en place
 
-Prérequis : Node.js LTS, pnpm, JDK 17+ et Android Studio (Android uniquement), Docker (pour Supabase),
-Supabase CLI.
+Prérequis : Node.js LTS, pnpm, JDK 17+ et Android Studio (Android uniquement), Docker (pour Supabase).
 
 ```bash
-supabase start                      # Postgres, Auth, Storage en local
+npx supabase@2.121.0 start          # Postgres, Auth, Storage en local (Docker)
 cd web && pnpm install && pnpm dev
 cd android && ./gradlew testDebugUnitTest lintDebug ktlintCheck
 ```
 
-Les commandes sont câblées dans l'Epic E0. D'ici là, le projet n'a pas encore de code exécutable.
+Supabase local : migrations dans `supabase/migrations/`, appliquées par `start` et
+`npx supabase@2.121.0 db reset`. Pour pointer le web dessus et créer les comptes de dev
+(`partner_a@example.com`, `partner_b@example.com`, `stranger@example.com`, mot de passe
+`openlove-dev`) :
+
+```bash
+npx supabase@2.121.0 status -o env --override-name api.url=SUPABASE_URL,auth.anon_key=SUPABASE_ANON_KEY,auth.service_role_key=SUPABASE_SERVICE_ROLE_KEY > web/.env.local
+cd web && pnpm seed                 # idempotent, refuse une URL non locale
+```
+
+Sans Supabase local, les tests RLS (`web/test/rls.test.ts`) sont ignorés avec un avertissement.
+
+Tests d'acceptation web (Playwright, hors CI pour l'instant) : `web/.env.local` doit aussi
+contenir les autres clés de `web/.env.example`.
+
+```bash
+cd web && npx playwright install chromium   # une fois
+npx supabase@2.121.0 start && pnpm seed && pnpm e2e
+```
 
 ## Fork et pull request
 
@@ -75,7 +92,7 @@ nouveaux contributeurs).
    Types : `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`, `perf`.
 4. **Ouvre une PR en brouillon** vers `dev`. Brouillon = « In Review ». Passe-la en prête quand les
    checks sont verts.
-5. **Checks verts** : `pnpm type-check && pnpm lint && pnpm test && pnpm arch-test` (web),
+5. **Checks verts** : `pnpm type-check && pnpm lint && pnpm test && pnpm arch-test && pnpm knip` (web),
    `testDebugUnitTest` (Android). Ajoute des tests pour chaque règle touchée.
 6. **Revue** : au moins une approbation d'un mainteneur. Les changements sensibles (auth, API, accès
    aux données, saisie utilisateur) demandent aussi une revue sécurité avant merge.
@@ -132,16 +149,33 @@ Read these before you open a PR. They are rules, not preferences:
 
 ## Development setup
 
-Prerequisites: Node.js LTS, pnpm, JDK 17+ and Android Studio (Android only), Docker (for Supabase),
-Supabase CLI.
+Prerequisites: Node.js LTS, pnpm, JDK 17+ and Android Studio (Android only), Docker (for Supabase).
 
 ```bash
-supabase start                      # local Postgres, Auth, Storage
+npx supabase@2.121.0 start          # local Postgres, Auth, Storage (Docker)
 cd web && pnpm install && pnpm dev
 cd android && ./gradlew testDebugUnitTest lintDebug ktlintCheck
 ```
 
-Commands are wired in Epic E0. Until then, the project has no runnable code yet.
+Local Supabase: migrations live in `supabase/migrations/`, applied by `start` and
+`npx supabase@2.121.0 db reset`. To point the web app at it and create the dev accounts
+(`partner_a@example.com`, `partner_b@example.com`, `stranger@example.com`, password
+`openlove-dev`):
+
+```bash
+npx supabase@2.121.0 status -o env --override-name api.url=SUPABASE_URL,auth.anon_key=SUPABASE_ANON_KEY,auth.service_role_key=SUPABASE_SERVICE_ROLE_KEY > web/.env.local
+cd web && pnpm seed                 # idempotent, refuses a non-local URL
+```
+
+Without local Supabase, the RLS tests (`web/test/rls.test.ts`) are skipped with a warning.
+
+Web acceptance tests (Playwright, not in CI yet): `web/.env.local` must also hold the other keys
+of `web/.env.example`.
+
+```bash
+cd web && npx playwright install chromium   # once
+npx supabase@2.121.0 start && pnpm seed && pnpm e2e
+```
 
 ## Fork and pull request
 
@@ -168,7 +202,7 @@ The first CI run on a fork PR waits for maintainer approval (GitHub default for 
 
    Types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`, `perf`.
 4. **Open a draft PR** against `dev`. Draft = "In Review". Mark it ready when checks pass.
-5. **Checks must be green**: `pnpm type-check && pnpm lint && pnpm test && pnpm arch-test` (web),
+5. **Checks must be green**: `pnpm type-check && pnpm lint && pnpm test && pnpm arch-test && pnpm knip` (web),
    `testDebugUnitTest` (Android). Add tests for every rule you touch.
 6. **Review**: at least one maintainer approval. Security-sensitive changes (auth, API, data access,
    user input) also get a security review before merge.
