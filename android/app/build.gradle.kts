@@ -9,6 +9,30 @@ kotlin {
     jvmToolchain(21)
 }
 
+abstract class CopyTokens : DefaultTask() {
+    @get:InputFile
+    abstract val tokens: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outputDir: DirectoryProperty
+
+    @TaskAction
+    fun copy() {
+        tokens.get().asFile.copyTo(outputDir.file("tokens.json").get().asFile, overwrite = true)
+    }
+}
+
+val copyTokens =
+    tasks.register<CopyTokens>("copyTokens") {
+        tokens.set(rootProject.file("../design/tokens.json"))
+    }
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(copyTokens, CopyTokens::outputDir)
+    }
+}
+
 android {
     namespace = "app.openlove"
     compileSdk = 37
@@ -19,12 +43,6 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "0.1.0"
-    }
-
-    sourceSets {
-        getByName("main") {
-            assets.srcDir(rootProject.file("../design"))
-        }
     }
 
     buildFeatures {
