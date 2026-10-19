@@ -66,3 +66,14 @@ test("refreshed session -> cookies and no-store headers on the response", async 
   expect(res.headers.get("cache-control")).toBe("private, no-store");
   expect(res.headers.get("x-middleware-request-cookie")).toContain("sb-auth=new");
 });
+
+test("/setup with no env -> passes without building the client", async () => {
+  vi.unstubAllEnvs();
+  vi.stubEnv("SUPABASE_URL", "");
+  vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "");
+  vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "");
+  vi.resetModules();
+  const { proxy: fresh } = await import("./proxy");
+  const res = await fresh(new NextRequest("http://localhost/setup"));
+  expect(res.headers.get("x-middleware-next")).toBe("1");
+});

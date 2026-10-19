@@ -82,4 +82,33 @@ describe.skipIf(!up)("couple RLS", () => {
     const { error } = await a.from("couples").insert({ start_date: "2022-01-01" });
     expect(error).not.toBeNull();
   });
+
+  test("stranger cannot add themselves to the seed couple", async () => {
+    const s = await signedIn(SEED.emails.stranger);
+    const { data: me } = await s.auth.getUser();
+    const mine = await s.from("couples").select();
+    expect(mine.data).toEqual([]);
+    const admin = localAdmin();
+    const seedMember = await admin.from("couple_members").select("couple_id").limit(1).single();
+    const { error } = await s
+      .from("couple_members")
+      .insert({ user_id: me.user?.id, couple_id: seedMember.data?.couple_id, role: "partner_b" });
+    expect(error).not.toBeNull();
+  });
+
+  test("partner_a cannot change their own role", async () => {
+    const a = await signedIn(SEED.emails.a);
+    const { data: me } = await a.auth.getUser();
+    const { error } = await a
+      .from("couple_members")
+      .update({ role: "partner_b" })
+      .eq("user_id", me.user?.id ?? "");
+    expect(error).not.toBeNull();
+    const row = await localAdmin()
+      .from("couple_members")
+      .select("role")
+      .eq("user_id", me.user?.id ?? "")
+      .single();
+    expect(row.data?.role).toBe("partner_a");
+  });
 });

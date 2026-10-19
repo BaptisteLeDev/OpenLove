@@ -6,6 +6,7 @@ const PUBLIC = new Set(["/login", "/setup"]);
 
 // Session presence only; Couple membership is checked by the page (D10).
 export async function proxy(req: NextRequest) {
+  if (PUBLIC.has(req.nextUrl.pathname)) return NextResponse.next({ request: req });
   const { sb, respond } = proxyClient(req);
   const { data } = await sb.auth.getClaims();
   if (!data?.claims && !PUBLIC.has(req.nextUrl.pathname))
