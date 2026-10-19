@@ -2,5 +2,23 @@
   "app": {
     "name": "OpenLove",
     "tagline": "L'app de votre couple, hébergée chez vous."
+  },
+  "setup": {
+    "title": "Configuration",
+    "intro": "Variables d'environnement requises par cette instance. Les valeurs ne sont jamais affichées.",
+    "status": {
+      "ok": "OK",
+      "missing": "Manquante",
+      "invalid": "Invalide"
+    },
+    "genericHowTo": "Renseignez cette variable dans votre fichier .env, puis redémarrez l'instance.",
+    "vars": {
+      "SUPABASE_URL": "URL du projet Supabase : tableau de bord, Project Settings > API > Project URL.",
+      "SUPABASE_ANON_KEY": "Clé anon : tableau de bord Supabase, Project Settings > API > anon public.",
+      "SUPABASE_SERVICE_ROLE_KEY": "Clé service_role : tableau de bord Supabase, Project Settings > API. Secrète, serveur uniquement.",
+      "CRON_SECRET": "Secret d'au moins 16 caractères. Générez-le avec : openssl rand -hex 16",
+      "NEXT_PUBLIC_SUPABASE_URL": "Même valeur que SUPABASE_URL, exposée au navigateur.",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "Même valeur que SUPABASE_ANON_KEY, exposée au navigateur."
+    }
   }
 }
