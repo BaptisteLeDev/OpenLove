@@ -16,16 +16,25 @@ done < <(git ls-files -z)
 
 hits=$(mktemp)
 trap 'rm -f "$hits"' EXIT
-scan() { grep -InHoE -e "$1" -- "${files[@]}" >>"$hits" || true; }
+scan() {
+  local rc=0
+  grep -InHoE -e "$1" -- "${files[@]}" >>"$hits" || rc=$?
+  [ "$rc" -le 1 ] || { echo "pii-gate: invalid pattern #${2:-?}" >&2; exit 2; }
+}
 
 [ "${#files[@]}" -gt 0 ] || { echo "pii-gate: no tracked files"; exit 0; }
 
 for p in "${generic[@]}"; do scan "$p"; done
-grep -InHoE -e "$mail" -- "${files[@]}" | grep -vE "$allowed_mail" >>"$hits" || true
+rc=0
+mails=$(grep -InHoE -e "$mail" -- "${files[@]}") || rc=$?
+[ "$rc" -le 1 ] || { echo "pii-gate: email scan failed" >&2; exit 2; }
+if [ -n "$mails" ]; then grep -vE "$allowed_mail" <<<"$mails" >>"$hits" || true; fi
 
 if [ -n "${PII_DENYLIST:-}" ]; then
+  n=0
   while IFS= read -r p; do
-    [ -n "$p" ] && scan "$p"
+    n=$((n + 1))
+    [ -z "$p" ] || scan "$p" "$n"
   done <<<"$PII_DENYLIST"
 else
   echo "pii-gate: PII_DENYLIST empty, private patterns skipped"

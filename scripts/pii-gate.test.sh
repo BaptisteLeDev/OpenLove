@@ -49,6 +49,7 @@ reset
 plant deny.txt "my secret-token-xyz here"
 expect denylist-hit 1 "$(run_gate 'secret-token-xyz')"
 expect denylist-empty 0 "$(run_gate '')"
+expect denylist-bad-regex 2 "$(run_gate '(')"
 reset
 
 plant lock.txt "ok"
