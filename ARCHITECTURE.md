@@ -55,7 +55,7 @@ Business rule needing a DB to test = rule leaked out of `domain/`.
 
 ## 4. API conventions
 
-- `withContract({input?, output, auth: 'partner' | 'cron' | 'public'}, handler)`.
+- `withContract({input?, output, auth: 'partner' | 'public'}, handler)`.
 - Envelope `{data: T} | {error: {code, message}}`, codes `unauthorized | forbidden |
   not_couple_member | validation_failed | not_found | rate_limited | unavailable | internal`,
   semantic HTTP status (`not_couple_member` = 403: valid session, no Couple).

@@ -1,19 +1,14 @@
-import { createHash, timingSafeEqual } from "node:crypto";
-
 import { z } from "zod";
 
-import { env } from "@/shared/env";
 import { getPartner, type Partner } from "@/shared/supabase/server";
 
-type Auth = "partner" | "cron" | "public";
+type Auth = "partner" | "public";
 type Ctx<A extends Auth> = A extends "partner" ? { partner: Partner } : object;
 type Schema = z.ZodType;
 
 function fail(status: number, code: string, message: string) {
   return Response.json({ error: { code, message } }, { status });
 }
-
-const digest = (v: string) => createHash("sha256").update(v).digest();
 
 function bearer(req: Request) {
   return /^Bearer (.+)$/.exec(req.headers.get("authorization") ?? "")?.[1];
@@ -29,17 +24,13 @@ function sameOrigin(req: Request) {
 async function authorize(req: Request, mode: Auth): Promise<Response | { partner?: Partner }> {
   if (mode === "public") return {};
   const token = bearer(req);
-  if (mode === "partner") {
-    const mutation = req.method !== "GET" && req.method !== "HEAD";
-    if (!token && mutation && !sameOrigin(req)) return fail(403, "forbidden", "origin mismatch");
-    const who = await getPartner(token);
-    if (who.ok) return { partner: who.partner };
-    return who.code === "unauthorized"
-      ? fail(401, "unauthorized", "unauthorized")
-      : fail(403, "not_couple_member", "not a couple member");
-  }
-  const ok = token && timingSafeEqual(digest(token), digest(env().CRON_SECRET));
-  return ok ? {} : fail(401, "unauthorized", "unauthorized");
+  const mutation = req.method !== "GET" && req.method !== "HEAD";
+  if (!token && mutation && !sameOrigin(req)) return fail(403, "forbidden", "origin mismatch");
+  const who = await getPartner(token);
+  if (who.ok) return { partner: who.partner };
+  return who.code === "unauthorized"
+    ? fail(401, "unauthorized", "unauthorized")
+    : fail(403, "not_couple_member", "not a couple member");
 }
 
 async function readInput(req: Request): Promise<unknown> {

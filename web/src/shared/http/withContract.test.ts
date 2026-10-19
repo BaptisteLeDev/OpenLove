@@ -12,7 +12,6 @@ const post = (body: unknown, headers: Record<string, string> = {}) =>
 
 beforeEach(() => {
   vi.mocked(getPartner).mockReset();
-  vi.stubEnv("CRON_SECRET", "s3cret-s3cret-s3cret");
   vi.stubEnv("SUPABASE_URL", "http://127.0.0.1:54321");
   vi.stubEnv("SUPABASE_ANON_KEY", "a");
   vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "b");
@@ -147,11 +146,3 @@ test("public handler ctx has no user", () => {
   });
 });
 
-test("cron: wrong or missing secret -> 401, right secret -> 200", async () => {
-  const route = withContract({ output: z.object({}), auth: "cron" }, () => ({}));
-  const call = (h?: string) =>
-    route(new Request("http://x/api/t", { headers: h ? { Authorization: h } : {} }));
-  expect((await call()).status).toBe(401);
-  expect((await call("Bearer short")).status).toBe(401);
-  expect((await call("Bearer s3cret-s3cret-s3cret")).status).toBe(200);
-});

@@ -30,7 +30,6 @@ beforeEach(() => {
   vi.stubEnv("SUPABASE_URL", "http://127.0.0.1:54321");
   vi.stubEnv("SUPABASE_ANON_KEY", "a");
   vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "b");
-  vi.stubEnv("CRON_SECRET", "s3cret-s3cret-s3cret");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "http://127.0.0.1:54321");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "a");
 });
