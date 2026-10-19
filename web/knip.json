@@ -1,5 +1,10 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignore": ["test/arch-fixtures/**"],
-  "entry": ["src/shared/i18n/request.ts"]
+  "entry": [
+    "src/shared/i18n/request.ts",
+    "src/shared/contracts/*.ts",
+    "src/shared/supabase/browser.ts"
+  ],
+  "ignoreIssues": { "src/shared/env.ts": ["exports"] }
 }

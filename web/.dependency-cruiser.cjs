@@ -16,6 +16,15 @@ module.exports = {
       to: { path: "features/[^/]+/server/|shared/supabase/server", reachable: true },
     },
     {
+      name: "api-routes-only-contract-and-server",
+      severity: "error",
+      from: { path: "app/api/", pathNot: "\\.test\\." },
+      to: {
+        pathNot: ["shared/http/", "shared/contracts/", "features/[^/]+/server/"],
+        dependencyTypesNot: ["npm", "npm-dev", "npm-optional", "npm-peer", "npm-bundled", "core"],
+      },
+    },
+    {
       name: "no-cross-feature-internals",
       severity: "error",
       from: { path: "features/([^/]+)/" },
