@@ -2,5 +2,12 @@
   "app": {
     "name": "OpenLove",
     "tagline": "L'app de votre couple, hébergée chez vous."
+  },
+  "home": {
+    "milestone": {
+      "title": "Ensemble depuis",
+      "totalDays": "{count, plural, =0 {0 jour} one {# jour} other {# jours}}",
+      "breakdown": "{years, plural, =0 {} one {# an} other {# ans}} {months, plural, =0 {} other {# mois}} {days, plural, =0 {} one {# jour} other {# jours}}"
+    }
   }
 }

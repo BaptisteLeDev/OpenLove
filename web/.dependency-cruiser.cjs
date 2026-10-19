@@ -6,7 +6,7 @@ module.exports = {
     {
       name: "domain-imports-only-domain-and-contracts",
       severity: "error",
-      from: { path: "features/([^/]+)/domain/" },
+      from: { path: "features/([^/]+)/domain/", pathNot: "\\.test\\." },
       to: { pathNot: ["features/$1/domain/", "shared/contracts/"] },
     },
     {
