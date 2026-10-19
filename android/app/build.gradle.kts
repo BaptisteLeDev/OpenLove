@@ -21,6 +21,12 @@ android {
         versionName = "0.1.0"
     }
 
+    sourceSets {
+        getByName("main") {
+            assets.srcDir(rootProject.file("../design"))
+        }
+    }
+
     buildFeatures {
         compose = true
     }
@@ -30,6 +36,9 @@ android {
             val contracts = rootProject.file("../contracts")
             it.inputs.dir(contracts)
             it.systemProperty("contracts.dir", contracts.absolutePath)
+            val tokens = rootProject.file("../design/tokens.json")
+            it.inputs.file(tokens)
+            it.systemProperty("tokens.file", tokens.absolutePath)
         }
     }
 }
