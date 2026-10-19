@@ -3,7 +3,16 @@
     "name": "OpenLove",
     "tagline": "L'app de votre couple, hébergée chez vous."
   },
+  "login": {
+    "title": "Connexion",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "invalid": "E-mail ou mot de passe incorrect.",
+    "refused": "Ce compte ne fait pas partie de ce couple."
+  },
   "home": {
+    "logout": "Se déconnecter",
     "milestone": {
       "title": "Ensemble depuis",
       "totalDays": "{count, plural, =0 {0 jour} one {# jour} other {# jours}}",

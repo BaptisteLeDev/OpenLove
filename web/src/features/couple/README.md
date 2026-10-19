@@ -9,4 +9,7 @@ The Couple an instance serves and its two Partenaires.
   (`unique (couple_id, role)`). RLS on both tables, read-only to members of the same Couple via
   `private.my_couple_id()` (S8/S9); writes go through the service role only. "One Couple per
   instance" is enforced by bootstrap, not the DB.
+- Web login: server action `server/auth.ts` (`signIn`, `signOut`). An account outside the Couple
+  is signed out and refused. `src/proxy.ts` only checks session presence; the Accueil page
+  checks membership.
 - Decision: [ADR 0002](../../../../docs/decisions/0002-supabase-single-data-path.md).

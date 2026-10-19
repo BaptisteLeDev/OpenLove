@@ -57,6 +57,14 @@ cd web && pnpm seed                 # idempotent, refuse une URL non locale
 
 Sans Supabase local, les tests RLS (`web/test/rls.test.ts`) sont ignorés avec un avertissement.
 
+Tests d'acceptation web (Playwright, hors CI pour l'instant) : `web/.env.local` doit aussi
+contenir les autres clés de `web/.env.example`.
+
+```bash
+cd web && npx playwright install chromium   # une fois
+npx supabase@2.121.0 start && pnpm seed && pnpm e2e
+```
+
 ## Fork et pull request
 
 1. **Fork** le dépôt sur GitHub, puis clone ton fork.
@@ -160,6 +168,14 @@ cd web && pnpm seed                 # idempotent, refuses a non-local URL
 ```
 
 Without local Supabase, the RLS tests (`web/test/rls.test.ts`) are skipped with a warning.
+
+Web acceptance tests (Playwright, not in CI yet): `web/.env.local` must also hold the other keys
+of `web/.env.example`.
+
+```bash
+cd web && npx playwright install chromium   # once
+npx supabase@2.121.0 start && pnpm seed && pnpm e2e
+```
 
 ## Fork and pull request
 
