@@ -78,6 +78,15 @@ test("partner with valid token -> handler receives user", async () => {
     new Request("http://x/api/t", { headers: { Authorization: "Bearer t" } }),
   );
   expect(await res.json()).toEqual({ data: { id: "u1" } });
+  expect(getPartner).toHaveBeenCalledWith("t");
+});
+
+test("public handler ctx has no user", () => {
+  withContract({ output: z.object({}), auth: "public" }, (_in, ctx) => {
+    // @ts-expect-error ctx.user only exists for partner routes
+    expect(ctx.user).toBeUndefined();
+    return {};
+  });
 });
 
 test("cron: wrong or missing secret -> 401, right secret -> 200", async () => {

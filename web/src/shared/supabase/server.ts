@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 import { env } from "@/shared/env";
 
-async function serverClient(bearer?: string) {
+async function serverClient() {
   const jar = await cookies();
   return createServerClient(env().SUPABASE_URL, env().SUPABASE_ANON_KEY, {
     cookies: {
@@ -17,13 +17,10 @@ async function serverClient(bearer?: string) {
         } catch {}
       },
     },
-    global: bearer ? { headers: { Authorization: `Bearer ${bearer}` } } : undefined,
   });
 }
 
-export async function getPartner(req: Request): Promise<User | null> {
-  const bearer = /^Bearer (.+)$/.exec(req.headers.get("authorization") ?? "")?.[1];
-  const supabase = await serverClient(bearer);
-  const { data, error } = await supabase.auth.getUser(bearer);
+export async function getPartner(bearer?: string): Promise<User | null> {
+  const { data, error } = await (await serverClient()).auth.getUser(bearer);
   return error ? null : data.user;
 }
