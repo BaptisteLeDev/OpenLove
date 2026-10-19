@@ -21,7 +21,12 @@ function rowOf(key: string) {
 }
 
 test("shows each key with its status and never a value", () => {
-  renderItems(checkEnv(envSchema, { SUPABASE_URL: "nope", SUPABASE_SERVICE_ROLE_KEY: "supersecretvalue1234" }));
+  renderItems(
+    checkEnv(envSchema, {
+      SUPABASE_URL: "nope",
+      SUPABASE_SERVICE_ROLE_KEY: "supersecretvalue1234",
+    }),
+  );
 
   for (const key of Object.keys(envSchema.shape)) expect(screen.getByText(key)).toBeTruthy();
   expect(rowOf("SUPABASE_URL").textContent).toContain(fr.setup.status.invalid);

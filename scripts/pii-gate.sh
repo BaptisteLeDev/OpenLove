@@ -4,7 +4,7 @@ set -euo pipefail
 allowed_mail='@(example\.com|example\.org|users\.noreply\.github\.com|anthropic\.com)$'
 generic=(
   '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
-  '/(home|Users)/[A-Za-z0-9._-]+/'
+  '(^|[^A-Za-z0-9_.-])/(home|Users)/[A-Za-z0-9._-]+/'
   '(^|[^0-9])(\+33[ .-]?|0)[1-9]([ .-]?[0-9]{2}){4}([^0-9]|$)'
 )
 mail='[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}'

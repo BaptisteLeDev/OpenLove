@@ -38,6 +38,10 @@ plant path.txt "see /${hm}/alice/notes"
 expect home-path 1 "$(run_gate)"
 reset
 
+plant import.txt "import x from \"@/features/${hm}/server/x\""
+expect home-segment-in-import 0 "$(run_gate)"
+reset
+
 plant phone.txt "call 0${d}6 12 34 56 78"
 expect phone 1 "$(run_gate)"
 reset

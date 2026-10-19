@@ -145,4 +145,3 @@ test("public handler ctx has no user", () => {
     return {};
   });
 });
-
