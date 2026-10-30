@@ -1,9 +1,9 @@
 import type { EnvCheckItem } from "@/shared/envChecklist";
 
-export const steps: readonly { id: "vercel" | "supabase"; prefixes: readonly string[] }[] = [
+export const steps = [
   { id: "vercel", prefixes: [] },
   { id: "supabase", prefixes: ["SUPABASE_", "NEXT_PUBLIC_SUPABASE_"] },
-];
+] as const satisfies readonly { id: string; prefixes: readonly string[] }[];
 
 type StepId = (typeof steps)[number]["id"] | "other";
 type StepGroup = { id: StepId; items: EnvCheckItem[] };

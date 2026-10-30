@@ -41,4 +41,8 @@ test("renders the Vercel and Supabase step guides in order", () => {
   for (const line of fr.setup.steps.vercel.instructions) {
     expect(container.textContent).toContain(line);
   }
+  const checklist = within(container).getByRole("list", { name: fr.setup.checklistTitle });
+  expect(within(checklist).getAllByRole("listitem")).toHaveLength(
+    fr.setup.steps.supabase.checklist.length,
+  );
 });
