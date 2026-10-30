@@ -1,9 +1,3 @@
-import org.gradle.api.DefaultTask
-import org.gradle.api.file.DirectoryProperty
-import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -52,42 +46,9 @@ sqldelight {
     }
 }
 
-abstract class GenerateContractFixtures : DefaultTask() {
-    @get:InputDirectory
-    abstract val contracts: DirectoryProperty
+val contractsDir = rootProject.file("../contracts")
 
-    @get:OutputDirectory
-    abstract val outputDir: DirectoryProperty
-
-    @TaskAction
-    fun generate() {
-        val entries =
-            contracts
-                .get()
-                .asFile
-                .listFiles { f -> f.extension == "json" }
-                .orEmpty()
-                .sortedBy { it.name }
-                .joinToString("") { "        \"${it.name}\" to \"\"\"${it.readText().replace("$", "\${'$'}")}\"\"\",\n" }
-        outputDir.get().file("app/openlove/ContractFixtures.kt").asFile.apply {
-            parentFile.mkdirs()
-            val header = "package app.openlove\n\n// generated from contracts/*.json, do not edit\n"
-            writeText(header + "val contractFixtures =\n    mapOf(\n$entries    )\n")
-        }
-    }
-}
-
-val generateContractFixtures =
-    tasks.register<GenerateContractFixtures>("generateContractFixtures") {
-        contracts.set(rootProject.layout.projectDirectory.dir("../contracts"))
-        outputDir.set(layout.buildDirectory.dir("generated/contracts"))
-    }
-
-kotlin.sourceSets.commonTest {
-    kotlin.srcDir(generateContractFixtures.flatMap { it.outputDir })
-}
-
-// AGP lint tasks read commonTest sources without declaring the generator as a dependency
-tasks.matching { it.name.contains("lint", ignoreCase = true) }.configureEach {
-    dependsOn(generateContractFixtures)
+tasks.withType<Test>().configureEach {
+    inputs.dir(contractsDir)
+    systemProperty("contracts.dir", contractsDir.absolutePath)
 }

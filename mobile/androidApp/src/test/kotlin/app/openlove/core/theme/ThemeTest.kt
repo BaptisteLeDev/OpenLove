@@ -7,6 +7,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.openlove.core.api.ApiJson
 import app.openlove.core.api.ThemeResponse
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
@@ -16,13 +18,14 @@ import java.io.File
 class ThemeTest {
     @get:Rule val tmp = TemporaryFolder()
 
-    private val fixture =
+    private val fixture: ThemeResponse =
         ApiJson
-            .decodeFromString(
-                ThemeFixture.serializer(),
-                File(System.getProperty("contracts.dir"), "theme.json").readText(),
-            ).valid
+            .parseToJsonElement(File(System.getProperty("contracts.dir"), "theme.json").readText())
+            .jsonObject
+            .getValue("valid")
+            .jsonArray
             .first()
+            .let { ApiJson.decodeFromJsonElement(ThemeResponse.serializer(), it) }
 
     @Test
     fun payloadRoleMapsToColorScheme() {
@@ -63,9 +66,4 @@ class ThemeTest {
             tokens.shapes().medium,
         )
     }
-
-    @kotlinx.serialization.Serializable
-    private data class ThemeFixture(
-        val valid: List<ThemeResponse>,
-    )
 }

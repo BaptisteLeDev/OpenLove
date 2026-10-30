@@ -7,8 +7,8 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import app.openlove.core.api.ApiJson
 import app.openlove.core.api.ThemeResponse
+import kotlinx.serialization.json.Json
 import java.io.File
 
 @Composable
@@ -75,7 +75,7 @@ class ThemeCache(
     private val file: File,
 ) {
     // Unreadable or stale cache must never block startup: fall back to defaults.
-    fun read(): ThemeResponse? = runCatching { ApiJson.decodeFromString(ThemeResponse.serializer(), file.readText()) }.getOrNull()
+    fun read(): ThemeResponse? = runCatching { Json.decodeFromString<ThemeResponse>(file.readText()) }.getOrNull()
 
-    fun save(theme: ThemeResponse) = file.writeText(ApiJson.encodeToString(ThemeResponse.serializer(), theme))
+    fun save(theme: ThemeResponse) = file.writeText(Json.encodeToString(theme))
 }

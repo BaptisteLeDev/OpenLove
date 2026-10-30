@@ -1,7 +1,7 @@
 package app.openlove.core.theme
 
-import app.openlove.core.api.ApiJson
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 @Serializable
 data class Tokens(
@@ -10,7 +10,7 @@ data class Tokens(
     val shape: ShapeScale,
 ) {
     companion object {
-        fun decode(text: String) = ApiJson.decodeFromString(serializer(), text)
+        fun decode(text: String) = Json.decodeFromString<Tokens>(text)
     }
 }
 
