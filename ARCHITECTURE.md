@@ -33,8 +33,8 @@ web/
     env.ts                      ONE Zod env schema (also drives /setup checklist)
     ui/                         M3 primitives (Button, Card, TextField, Chip, Dialog...)
     i18n/                       next-intl, messages/fr.json
-android/                        app/ (screens per feature), core/ (api client, auth, theme)
-contracts/                      generated fixtures, decoded by Android contract tests
+mobile/                         shared/ (KMP: Ktor client, DTOs, Json, SQLDelight), androidApp/ (Compose screens, DI, theme)
+contracts/                      generated fixtures, decoded by mobile contract tests (`shared/commonTest`)
 design/tokens.json              typography, shape, default seed; scheme at runtime via `/api/theme`
 supabase/migrations/            SQL, RLS on every table
 ```
@@ -79,6 +79,7 @@ Business rule needing a DB to test = rule leaked out of `domain/`.
 | Deploy | Vercel button (v1). Docker/VPS after all features + UX | - |
 | Toolchain | TS 7, Oxlint (type-aware + security jsPlugins), Oxfmt, React Compiler, ktlint | [0007](docs/decisions/0007-toolchain.md) |
 | Android JSON | Prod ignores unknown keys (old APKs survive new fields); contract tests strict | [0008](docs/decisions/0008-android-json-tolerant-prod.md) |
+| Mobile core | KMP `mobile/shared` (Ktor, DTOs, Json, cache, session); native UI per platform (Compose / SwiftUI) | [0009](docs/decisions/0009-kmp-shared-mobile-core.md) |
 
 ## 6. Security fixes carried from the source audit
 
