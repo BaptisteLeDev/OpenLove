@@ -62,4 +62,19 @@ describe.skipIf(!up)("messages", () => {
     expect(second.items[0]?.id).not.toBe(ids[1]);
     expect(second.items.map((m) => m.id)).toContain(ids[0]);
   });
+
+  test("an undecryptable row is skipped, the page still loads", async () => {
+    const a = await signedIn(SEED.emails.a);
+    const ok = await sendMessage({ userId: a.userId, coupleId }, "fine", a.sb);
+    const bad = await a.sb
+      .from("messages")
+      .insert({ couple_id: coupleId, author_id: a.userId, body_enc: "garbage" })
+      .select("id")
+      .single();
+    expect(bad.error).toBeNull();
+
+    const ids = (await listMessages({ limit: 100 }, a.sb)).items.map((m) => m.id);
+    expect(ids).toContain(ok.id);
+    expect(ids).not.toContain(String(bad.data?.id));
+  });
 });

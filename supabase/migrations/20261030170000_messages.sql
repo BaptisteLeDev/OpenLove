@@ -2,7 +2,7 @@ create table public.messages (
   id bigint generated always as identity primary key,
   couple_id uuid not null references public.couples on delete cascade,
   author_id uuid not null references auth.users on delete cascade,
-  body_enc text not null,
+  body_enc text not null check (char_length(body_enc) <= 22000),
   created_at timestamptz not null default now()
 );
 

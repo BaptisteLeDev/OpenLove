@@ -20,6 +20,16 @@ const toMessage = (r: Row): Message => ({
   createdAt: new Date(r.created_at).toISOString(),
 });
 
+// a Partenaire can insert a raw blob via PostgREST: skip it, keep the page
+function readable(r: Row): Message[] {
+  try {
+    return [toMessage(r)];
+  } catch {
+    console.error(`message ${r.id} undecryptable`);
+    return [];
+  }
+}
+
 const COLUMNS = "id, author_id, body_enc, created_at";
 
 export async function sendMessage(
@@ -54,7 +64,7 @@ export async function listMessages(
   if (error) throw error;
   const page = data.slice(0, limit);
   return {
-    items: page.map(toMessage),
+    items: page.flatMap(readable),
     nextCursor: data.length > limit ? String(page[page.length - 1]?.id) : null,
   };
 }
