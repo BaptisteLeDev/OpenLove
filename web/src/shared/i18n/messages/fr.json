@@ -18,6 +18,34 @@
       "SUPABASE_SERVICE_ROLE_KEY": "Clé service_role : tableau de bord Supabase, Project Settings > API. Secrète, serveur uniquement.",
       "NEXT_PUBLIC_SUPABASE_URL": "Même valeur que SUPABASE_URL, exposée au navigateur.",
       "NEXT_PUBLIC_SUPABASE_ANON_KEY": "Même valeur que SUPABASE_ANON_KEY, exposée au navigateur."
+    },
+    "steps": {
+      "vercel": {
+        "title": "1. Vercel",
+        "instructions": [
+          "Importez votre fork GitHub dans Vercel.",
+          "Root Directory : `web`.",
+          "Activez « Include files outside the root directory in the Build Step » (l'app lit `design/tokens.json`).",
+          "Une fois l'étape Supabase faite, ajoutez chaque variable ci-dessous dans Settings > Environment Variables, puis redéployez."
+        ]
+      },
+      "supabase": {
+        "title": "2. Supabase",
+        "instructions": [
+          "Créez un projet Supabase.",
+          "Liez le projet puis appliquez les migrations : `supabase link --project-ref <ref>` puis `supabase db push`.",
+          "Copiez l'URL et les clés dans les variables ci-dessous.",
+          "Checklist de sécurité du tableau de bord hébergé :",
+          "Auth > Providers > Email : désactivez les inscriptions une fois les deux partenaires créés.",
+          "Auth > Password security : protection contre les mots de passe fuités activée, longueur minimale 8.",
+          "Auth > Sessions : durée de vie limitée et délai d'inactivité.",
+          "Database > Settings : Enforce SSL activé, restrictions réseau (allowlist). L'app utilise HTTPS, seul Postgres direct est concerné.",
+          "Advisors > Security Advisor : aucun WARN."
+        ]
+      },
+      "other": {
+        "title": "Autres variables"
+      }
     }
   },
   "login": {

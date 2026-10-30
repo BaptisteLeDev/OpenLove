@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { NextIntlClientProvider } from "next-intl";
 import { expect, test } from "vitest";
 
@@ -40,4 +40,15 @@ test("a var without message falls back to the generic how-to", () => {
   renderItems(checkEnv(envSchema.extend({ NEW_VAR: envSchema.shape.SUPABASE_ANON_KEY }), {}));
 
   expect(rowOf("NEW_VAR").textContent).toContain(fr.setup.genericHowTo);
+});
+
+test("an unknown var renders under the other section", () => {
+  const { container } = renderItems(
+    checkEnv(envSchema.extend({ NEW_VAR: envSchema.shape.SUPABASE_ANON_KEY }), {}),
+  );
+
+  expect(within(container).getByRole("heading", { name: fr.setup.steps.other.title })).toBeTruthy();
+  expect(within(container).getByText("NEW_VAR").closest("section")?.textContent).toContain(
+    fr.setup.steps.other.title,
+  );
 });
