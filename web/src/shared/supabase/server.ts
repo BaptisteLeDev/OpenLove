@@ -41,10 +41,6 @@ export async function partnerOf(sb: SupabaseClient, jwt?: string): Promise<Partn
   return { ok: true, partner: { userId: auth.user.id, coupleId: data.couple_id, role: data.role } };
 }
 
-export async function getPartner(bearer?: string): Promise<PartnerResult> {
-  return partnerOf(await serverClient(bearer), bearer);
-}
-
 // Refreshed cookies go on req (seen by this render) and on the response.
 export function proxyClient(req: NextRequest) {
   const writes: { name: string; value: string; options: CookieOptions }[] = [];

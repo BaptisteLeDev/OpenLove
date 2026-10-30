@@ -112,3 +112,38 @@ describe.skipIf(!up)("couple RLS", () => {
     expect(row.data?.role).toBe("partner_a");
   });
 });
+
+describe.skipIf(!up)("special dates RLS", () => {
+  let coupleId = "";
+
+  beforeAll(async () => {
+    ({ coupleId } = await seed(localAdmin()));
+  });
+
+  test("partner_a does not see partner_b private date", async () => {
+    const a = await signedIn(SEED.emails.a);
+    const { data } = await a.from("special_dates").select("label");
+    const labels = data?.map((d) => d.label) ?? [];
+    expect(labels).toContain(SEED.specialDates.shared);
+    expect(labels).not.toContain(SEED.specialDates.private);
+  });
+
+  test("partner_b sees own private date", async () => {
+    const b = await signedIn(SEED.emails.b);
+    const { data } = await b.from("special_dates").select("label");
+    expect(data?.map((d) => d.label)).toContain(SEED.specialDates.private);
+  });
+
+  test("stranger sees no special dates", async () => {
+    const s = await signedIn(SEED.emails.stranger);
+    expect((await s.from("special_dates").select()).data).toEqual([]);
+  });
+
+  test("partner_a cannot insert a special date", async () => {
+    const a = await signedIn(SEED.emails.a);
+    const { error } = await a
+      .from("special_dates")
+      .insert({ couple_id: coupleId, label: "Hack", date: "2030-01-01" });
+    expect(error).not.toBeNull();
+  });
+});

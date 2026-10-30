@@ -1,9 +1,10 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-import { getPartner, type Partner } from "@/shared/supabase/server";
+import { partnerOf, type Partner, serverClient } from "@/shared/supabase/server";
 
 type Auth = "partner" | "public";
-type Ctx<A extends Auth> = A extends "partner" ? { partner: Partner } : object;
+type Ctx<A extends Auth> = A extends "partner" ? { partner: Partner; sb: SupabaseClient } : object;
 type Schema = z.ZodType;
 
 function fail(status: number, code: string, message: string) {
@@ -21,13 +22,17 @@ function sameOrigin(req: Request) {
   return !!origin && !!host && URL.parse(origin)?.host === host;
 }
 
-async function authorize(req: Request, mode: Auth): Promise<Response | { partner?: Partner }> {
+async function authorize(
+  req: Request,
+  mode: Auth,
+): Promise<Response | { partner?: Partner; sb?: SupabaseClient }> {
   if (mode === "public") return {};
   const token = bearer(req);
   const mutation = req.method !== "GET" && req.method !== "HEAD";
   if (!token && mutation && !sameOrigin(req)) return fail(403, "forbidden", "origin mismatch");
-  const who = await getPartner(token);
-  if (who.ok) return { partner: who.partner };
+  const sb = await serverClient(token);
+  const who = await partnerOf(sb, token);
+  if (who.ok) return { partner: who.partner, sb };
   return who.code === "unauthorized"
     ? fail(401, "unauthorized", "unauthorized")
     : fail(403, "not_couple_member", "not a couple member");
