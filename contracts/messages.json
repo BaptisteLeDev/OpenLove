@@ -4,7 +4,7 @@
       "items": [
         {
           "id": "42",
-          "authorId": "6f1c2f0e-3b1a-4c55-9a43-0d2f6f6a9b11",
+          "authorId": "0192f6c4-5b1a-7c55-9a43-0d2f6f6a9b11",
           "body": "Bonne nuit",
           "createdAt": "2026-10-30T22:00:00.000Z"
         }
@@ -20,19 +20,8 @@
     {
       "items": [
         {
-          "id": "abc",
-          "authorId": "6f1c2f0e-3b1a-4c55-9a43-0d2f6f6a9b11",
-          "body": "Bonne nuit",
-          "createdAt": "2026-10-30T22:00:00.000Z"
-        }
-      ],
-      "nextCursor": null
-    },
-    {
-      "items": [
-        {
           "id": "42",
-          "authorId": "6f1c2f0e-3b1a-4c55-9a43-0d2f6f6a9b11",
+          "authorId": "0192f6c4-5b1a-7c55-9a43-0d2f6f6a9b11",
           "body": "Bonne nuit",
           "createdAt": "2026-10-30T22:00:00.000Z"
         }
@@ -42,8 +31,18 @@
       "items": [
         {
           "id": "42",
-          "authorId": "x",
-          "body": "Bonne nuit",
+          "authorId": "0192f6c4-5b1a-7c55-9a43-0d2f6f6a9b11",
+          "body": 1,
+          "createdAt": "2026-10-30T22:00:00.000Z"
+        }
+      ],
+      "nextCursor": null
+    },
+    {
+      "items": [
+        {
+          "id": "42",
+          "authorId": "0192f6c4-5b1a-7c55-9a43-0d2f6f6a9b11",
           "createdAt": "2026-10-30T22:00:00.000Z"
         }
       ],

@@ -26,7 +26,7 @@ export const messagesResponse = z.strictObject({
 
 const sample = {
   id: "42",
-  authorId: "6f1c2f0e-3b1a-4c55-9a43-0d2f6f6a9b11",
+  authorId: "0192f6c4-5b1a-7c55-9a43-0d2f6f6a9b11",
   body: "Bonne nuit",
   createdAt: "2026-10-30T22:00:00.000Z",
 };
@@ -37,8 +37,8 @@ export const examples = {
     { items: [], nextCursor: null },
   ],
   invalid: [
-    { items: [{ ...sample, id: "abc" }], nextCursor: null },
     { items: [sample] },
-    { items: [{ ...sample, authorId: "x" }], nextCursor: null },
+    { items: [{ ...sample, body: 1 }], nextCursor: null },
+    { items: [{ ...sample, body: undefined }], nextCursor: null },
   ],
 };

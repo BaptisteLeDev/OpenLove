@@ -52,7 +52,7 @@ test("POST empty text -> 400; valid -> 200 with the Message", async () => {
   expect((await post({ text: "" })).status).toBe(400);
   const msg = {
     id: "1",
-    authorId: "6f1c2f0e-3b1a-4c55-9a43-0d2f6f6a9b11",
+    authorId: "0192f6c4-5b1a-7c55-9a43-0d2f6f6a9b11",
     body: "hi",
     createdAt: "2026-10-30T10:00:00.000Z",
   };
