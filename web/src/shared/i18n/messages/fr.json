@@ -17,7 +17,8 @@
       "SUPABASE_ANON_KEY": "Clé anon : tableau de bord Supabase, Project Settings > API > anon public.",
       "SUPABASE_SERVICE_ROLE_KEY": "Clé service_role : tableau de bord Supabase, Project Settings > API. Secrète, serveur uniquement.",
       "NEXT_PUBLIC_SUPABASE_URL": "Même valeur que SUPABASE_URL, exposée au navigateur.",
-      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "Même valeur que SUPABASE_ANON_KEY, exposée au navigateur."
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "Même valeur que SUPABASE_ANON_KEY, exposée au navigateur.",
+      "MESSAGE_ENCRYPTION_KEY": "Clé AES-256 du chat: 32 octets en base64 (openssl rand -base64 32). Secrète, jamais en base. La perdre rend les Messages illisibles."
     }
   },
   "login": {
@@ -30,10 +31,17 @@
   },
   "home": {
     "logout": "Se déconnecter",
+    "messages": "Messages",
     "milestone": {
       "title": "Ensemble depuis",
       "totalDays": "{count, plural, =0 {0 jour} one {# jour} other {# jours}}",
       "breakdown": "{years, plural, =0 {} one {# an} other {# ans}} {months, plural, =0 {} other {# mois}} {days, plural, =0 {} one {# jour} other {# jours}}"
     }
+  },
+  "messages": {
+    "title": "Messages",
+    "empty": "Aucun message pour l'instant.",
+    "placeholder": "Écrire un message",
+    "send": "Envoyer"
   }
 }
