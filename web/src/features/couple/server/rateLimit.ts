@@ -1,7 +1,7 @@
 import "server-only";
 import { adminClient } from "@/shared/supabase/server";
 
-// Fixed window counted in Postgres (public.hit_rate_limit), shared across instances. true = allowed.
+// Postgres fixed window: shared across instances. true = allowed.
 export async function hitRateLimit(
   key: string,
   max: number,

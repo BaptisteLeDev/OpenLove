@@ -15,5 +15,6 @@ The Couple an instance serves and its two Partenaires.
 - Appairage: `server/pairing.ts`. Code stored as sha256 only, TTL 5 min, single use via atomic
   delete-returning, membership re-checked at exchange, one live code per Partenaire. Session minted
   by admin `generateLink` magiclink + `verifyOtp`. Limiter: Postgres fixed window, keys
-  `pairing:<ip>` / `login:<ip>`, 10 per 15 min (`domain/limits.ts`). [ADR 0005](../../../../docs/decisions/0005-qr-pairing-mobile.md).
+  `pairing:<ip>` / `login:<ip>`, 10 per 15 min (`domain/limits.ts`). IP = rightmost
+  `x-forwarded-for` hop: assumes one trusted proxy (Vercel); self-host must set one. [ADR 0005](../../../../docs/decisions/0005-qr-pairing-mobile.md).
 - Decision: [ADR 0002](../../../../docs/decisions/0002-supabase-single-data-path.md).

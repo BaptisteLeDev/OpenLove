@@ -2,8 +2,8 @@ import { expect, test } from "vitest";
 
 import { clientIp } from "./clientIp";
 
-test("takes the first x-forwarded-for hop", () => {
-  expect(clientIp(new Headers({ "x-forwarded-for": "1.2.3.4, 10.0.0.1" }))).toBe("1.2.3.4");
+test("takes the rightmost x-forwarded-for hop, ignores client-sent ones", () => {
+  expect(clientIp(new Headers({ "x-forwarded-for": "6.6.6.6, 1.2.3.4" }))).toBe("1.2.3.4");
 });
 
 test("falls back to x-real-ip", () => {

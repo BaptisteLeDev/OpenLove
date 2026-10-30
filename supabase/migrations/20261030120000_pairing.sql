@@ -32,7 +32,8 @@ begin
   on conflict (key, window_start) do update set hits = r.hits + 1
   returning r.hits into v_hits;
 
-  delete from public.rate_limits where key = p_key and window_start < v_window;
+  -- All keys: rotated client IPs leave one-shot rows. Windows stay < 1 day.
+  delete from public.rate_limits where window_start < now() - interval '1 day';
 
   return v_hits <= p_max;
 end;

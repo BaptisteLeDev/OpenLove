@@ -62,8 +62,12 @@ export async function exchangePairingCode(
     .maybeSingle();
   if (memberError) throw memberError;
   if (!member) throw invalidCode();
+  return mintSession(row.user_id);
+}
 
-  const { data: user, error: userError } = await admin.auth.admin.getUserById(row.user_id);
+async function mintSession(userId: string): Promise<PairingResponse> {
+  const admin = adminClient();
+  const { data: user, error: userError } = await admin.auth.admin.getUserById(userId);
   if (userError) throw userError;
   if (!user.user.email) throw new Error("pairing user has no email");
   const { data: link, error: linkError } = await admin.auth.admin.generateLink({

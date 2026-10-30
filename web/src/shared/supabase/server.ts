@@ -67,7 +67,7 @@ export function proxyClient(req: NextRequest) {
   return { sb, respond };
 }
 
-// Service role bypasses RLS: only for server modules that re-check authorization themselves.
+// Service role bypasses RLS: callers re-check authorization.
 let admin: SupabaseClient | undefined;
 export function adminClient(): SupabaseClient {
   return (admin ??= createClient(env().SUPABASE_URL, env().SUPABASE_SERVICE_ROLE_KEY, {
@@ -75,9 +75,9 @@ export function adminClient(): SupabaseClient {
   }));
 }
 
-// Anon key, no session: exchanges a token hash for a session the caller then owns.
+// Per call, no stored session: mints a session handed to the caller.
 export function anonClient(): SupabaseClient {
   return createClient(env().SUPABASE_URL, env().SUPABASE_ANON_KEY, {
-    auth: { persistSession: false },
+    auth: { persistSession: false, autoRefreshToken: false },
   });
 }

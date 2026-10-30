@@ -43,5 +43,5 @@ test("rate limited state shows the rate limit alert", async () => {
   });
   fireEvent.change(screen.getByLabelText(fr.login.password), { target: { value: "pw" } });
   fireEvent.click(screen.getByRole("button", { name: fr.login.submit }));
-  expect((await screen.findByRole("alert")).textContent).toBe(fr.login.rateLimited);
+  expect((await screen.findByRole("alert")).textContent).toBe(fr.login.rate_limited);
 });

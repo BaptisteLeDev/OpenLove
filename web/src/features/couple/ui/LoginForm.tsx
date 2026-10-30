@@ -29,9 +29,7 @@ export function LoginForm({ action }: { action: (prev: State, form: FormData) =>
           className="rounded border p-2"
         />
       </label>
-      {state.error && (
-        <p role="alert">{t(state.error === "rate_limited" ? "rateLimited" : state.error)}</p>
-      )}
+      {state.error && <p role="alert">{t(state.error)}</p>}
       <button
         type="submit"
         disabled={pending}

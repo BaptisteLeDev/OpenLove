@@ -1,8 +1,9 @@
 const UNKNOWN = "unknown";
 
-// Behind a proxy the first x-forwarded-for hop is the client; spoofable, so only a limiter key.
+// Rightmost XFF hop = added by our own proxy (Vercel, nginx append);
+// hops to its left come from the client. Only a limiter key.
 export function clientIp(headers: Headers): string {
-  const forwarded = headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  const forwarded = headers.get("x-forwarded-for")?.split(",").at(-1)?.trim();
   if (forwarded) return forwarded;
   return headers.get("x-real-ip")?.trim() || UNKNOWN;
 }
