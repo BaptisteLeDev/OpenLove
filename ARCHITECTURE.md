@@ -33,8 +33,8 @@ web/
     env.ts                      ONE Zod env schema (also drives /setup checklist)
     ui/                         M3 primitives (Button, Card, TextField, Chip, Dialog...)
     i18n/                       next-intl, messages/fr.json
-android/                        app/ (screens per feature), core/ (api client, auth, theme)
-contracts/                      generated fixtures, decoded by Android contract tests
+mobile/                         shared/ (KMP: Ktor client, DTOs, Json, SQLDelight), androidApp/ (Compose screens, DI, theme)
+contracts/                      generated fixtures, decoded by mobile contract tests (`shared/commonTest`)
 design/tokens.json              typography, shape, default seed; scheme at runtime via `/api/theme`
 supabase/migrations/            SQL, RLS on every table
 ```

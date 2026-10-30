@@ -22,23 +22,23 @@ Plan (local, gitignored): `.superpowers/2026-10-15-openlove-plan.md`.
 | Path | What |
 |---|---|
 | `web/` | Next.js App Router: UI + `/api/*` (the ONLY backend, Android included) |
-| `android/` | Kotlin, Compose Material3, Ktor, kotlinx.serialization, manual DI, minSdk 26 |
+| `mobile/` | KMP Gradle project: `shared/` (Ktor client, DTOs, Json, SQLDelight; Android + iOS targets), `androidApp/` (Compose Material3, manual DI, minSdk 26) |
 | `contracts/` | JSON fixtures generated from Zod (`web/src/shared/contracts`), decoded by Android tests |
 | `design/tokens.json` | M3 typography, shape, default seed. Color scheme computed at runtime from the Couple's seed, served by `/api/theme` |
 | `supabase/` | migrations, seed (Supabase = single data path, no memory fallback) |
 
-No pnpm workspace: `web/` = pnpm project, `android/` = Gradle project, side by side.
+No pnpm workspace: `web/` = pnpm project, `mobile/` = Gradle project, side by side.
 
 ## Commands
 
 ```bash
 cd web && pnpm dev | pnpm build | pnpm type-check | pnpm lint | pnpm test | pnpm arch-test | pnpm knip
 cd web && pnpm contracts      # regenerate contracts/*.json from Zod
-cd android && ./gradlew testDebugUnitTest lintDebug ktlintCheck
+cd mobile && ./gradlew :shared:allTests :androidApp:testDebugUnitTest :androidApp:lintDebug ktlintCheck
 supabase start                # local Postgres/Auth/Storage for dev
 ```
 
-Done = `type-check && lint && test && arch-test && knip` green (web) + `testDebugUnitTest` green (android).
+Done = `type-check && lint && test && arch-test && knip` green (web) + `:shared:allTests :androidApp:testDebugUnitTest` green (mobile).
 
 ## Hard rules
 
