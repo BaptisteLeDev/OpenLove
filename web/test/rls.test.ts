@@ -3,9 +3,12 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { beforeAll, describe, expect, test } from "vitest";
 
 import { ensureUser, localAdmin, SEED, seed } from "../scripts/seed";
+import { encrypt } from "../src/features/messages/server/crypto";
 
 const url = process.env.SUPABASE_URL ?? "";
 const anonKey = process.env.SUPABASE_ANON_KEY ?? "";
+// Valid ciphertext: parallel files list this table and decrypt every row.
+const blob = () => encrypt(Buffer.from(process.env.MESSAGE_ENCRYPTION_KEY ?? "", "base64"), "rls");
 const OTHER = "other@example.com";
 
 const up =
@@ -110,5 +113,40 @@ describe.skipIf(!up)("couple RLS", () => {
       .eq("user_id", me.user?.id ?? "")
       .single();
     expect(row.data?.role).toBe("partner_a");
+  });
+
+  test("messages: stranger reads 0 rows and cannot insert", async () => {
+    const admin = localAdmin();
+    const { coupleId } = await seed(admin);
+    const a = await signedIn(SEED.emails.a);
+    const { data: me } = await a.auth.getUser();
+    const own = await a
+      .from("messages")
+      .insert({ couple_id: coupleId, author_id: me.user?.id, body_enc: blob() });
+    expect(own.error).toBeNull();
+
+    const s = await signedIn(SEED.emails.stranger);
+    const { data: who } = await s.auth.getUser();
+    expect((await s.from("messages").select()).data).toEqual([]);
+    const ins = await s
+      .from("messages")
+      .insert({ couple_id: coupleId, author_id: who.user?.id, body_enc: blob() });
+    expect(ins.error).not.toBeNull();
+    expect((await anon().from("messages").select()).data ?? []).toEqual([]);
+  });
+
+  test("messages: partner cannot forge the author or write into another couple", async () => {
+    const a = await signedIn(SEED.emails.a);
+    const { coupleId } = await seed(localAdmin());
+    const b = await localAdmin().from("couple_members").select("user_id").eq("role", "partner_b");
+    const forged = await a
+      .from("messages")
+      .insert({ couple_id: coupleId, author_id: b.data?.[0]?.user_id, body_enc: blob() });
+    expect(forged.error).not.toBeNull();
+    const { data: me } = await a.auth.getUser();
+    const foreign = await a
+      .from("messages")
+      .insert({ couple_id: otherCoupleId, author_id: me.user?.id, body_enc: blob() });
+    expect(foreign.error).not.toBeNull();
   });
 });

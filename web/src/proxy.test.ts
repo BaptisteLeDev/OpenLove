@@ -29,6 +29,7 @@ beforeEach(() => {
   refresh = undefined;
   vi.stubEnv("SUPABASE_URL", "http://127.0.0.1:54321");
   vi.stubEnv("SUPABASE_ANON_KEY", "a");
+  vi.stubEnv("MESSAGE_ENCRYPTION_KEY", Buffer.alloc(32).toString("base64"));
   vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "b");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "http://127.0.0.1:54321");
   vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "a");

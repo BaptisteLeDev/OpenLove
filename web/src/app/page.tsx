@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { signOut } from "@/features/couple/server/auth";
@@ -13,6 +14,9 @@ export default async function HomePage() {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-6 p-6">
       <Milestone value={await getMilestone(result.partner.coupleId)} />
+      <Link href="/messages" className="rounded-full border px-4 py-2">
+        {t("messages")}
+      </Link>
       <form action={signOut}>
         <button type="submit" className="rounded-full border px-4 py-2">
           {t("logout")}

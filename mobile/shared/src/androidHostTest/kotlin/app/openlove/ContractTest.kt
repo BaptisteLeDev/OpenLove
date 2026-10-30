@@ -1,6 +1,7 @@
 package app.openlove
 
 import app.openlove.core.api.HealthResponse
+import app.openlove.core.api.MessagesResponse
 import app.openlove.core.api.ThemeResponse
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
@@ -19,6 +20,7 @@ class ContractTest {
     private val serializers: Map<String, KSerializer<*>> =
         mapOf(
             "health.json" to HealthResponse.serializer(),
+            "messages.json" to MessagesResponse.serializer(),
             "theme.json" to ThemeResponse.serializer(),
         )
 
