@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { getPartner } from "@/shared/supabase/server";
 
-import { withContract } from "./withContract";
+import { ApiError, withContract } from "./withContract";
 
 vi.mock("@/shared/supabase/server", () => ({ getPartner: vi.fn() }));
 
@@ -144,4 +144,39 @@ test("public handler ctx has no user", () => {
     expect(ctx.partner).toBeUndefined();
     return {};
   });
+});
+
+test("ApiError -> its status and code in the envelope, not logged", async () => {
+  const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+  const route = withContract({ output: z.object({}), auth: "public" }, () => {
+    throw new ApiError(429, "rate_limited", "too many attempts");
+  });
+  const res = await route(new Request("http://x/api/t"));
+  expect(res.status).toBe(429);
+  expect(await res.json()).toEqual({
+    error: { code: "rate_limited", message: "too many attempts" },
+  });
+  expect(spy).not.toHaveBeenCalled();
+  spy.mockRestore();
+});
+
+test("handler ctx carries the request for public routes", async () => {
+  const seen: string[] = [];
+  const route = withContract({ output: z.object({}), auth: "public" }, (_in, ctx) => {
+    seen.push(ctx.req.url);
+    return {};
+  });
+  await route(new Request("http://x/api/t?a=1"));
+  expect(seen).toEqual(["http://x/api/t?a=1"]);
+});
+
+test("handler ctx carries the request and partner for partner routes", async () => {
+  vi.mocked(getPartner).mockResolvedValue(member);
+  const seen: unknown[] = [];
+  const route = withContract({ output: z.object({}), auth: "partner" }, (_in, ctx) => {
+    seen.push(ctx.req.url, ctx.partner);
+    return {};
+  });
+  await route(new Request("http://x/api/t", { headers: { Authorization: "Bearer t" } }));
+  expect(seen).toEqual(["http://x/api/t", partner]);
 });
