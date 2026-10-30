@@ -1,17 +1,21 @@
 import { beforeEach, expect, test, vi } from "vitest";
 import { z } from "zod";
 
-import { getPartner } from "@/shared/supabase/server";
+import { partnerOf, serverClient } from "@/shared/supabase/server";
 
 import { withContract } from "./withContract";
 
-vi.mock("@/shared/supabase/server", () => ({ getPartner: vi.fn() }));
+const sb = { tag: "sb" };
+
+vi.mock("@/shared/supabase/server", () => ({ serverClient: vi.fn(), partnerOf: vi.fn() }));
 
 const post = (body: unknown, headers: Record<string, string> = {}) =>
   new Request("http://x/api/t", { method: "POST", body: JSON.stringify(body), headers });
 
 beforeEach(() => {
-  vi.mocked(getPartner).mockReset();
+  vi.mocked(partnerOf).mockReset();
+  vi.mocked(serverClient).mockReset();
+  vi.mocked(serverClient).mockResolvedValue(sb as never);
   vi.stubEnv("SUPABASE_URL", "http://127.0.0.1:54321");
   vi.stubEnv("SUPABASE_ANON_KEY", "a");
   vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "b");
@@ -61,17 +65,18 @@ test("thrown error -> 500 internal, no stack", async () => {
 
 const partner = { userId: "u1", coupleId: "c1", role: "partner_a" as const };
 const member = { ok: true as const, partner };
-const okRoute = () => withContract({ output: z.object({}), auth: "partner" }, () => ({}));
+const okRoute = (handler = () => ({})) =>
+  withContract({ output: z.object({}), auth: "partner" }, handler);
 
 test("partner without token -> 401 unauthorized", async () => {
-  vi.mocked(getPartner).mockResolvedValue({ ok: false, code: "unauthorized" });
+  vi.mocked(partnerOf).mockResolvedValue({ ok: false, code: "unauthorized" });
   const res = await okRoute()(new Request("http://x/api/t"));
   expect(res.status).toBe(401);
   expect((await res.json()).error.code).toBe("unauthorized");
 });
 
 test("valid JWT without membership -> 403 not_couple_member", async () => {
-  vi.mocked(getPartner).mockResolvedValue({ ok: false, code: "not_couple_member" });
+  vi.mocked(partnerOf).mockResolvedValue({ ok: false, code: "not_couple_member" });
   const res = await okRoute()(
     new Request("http://x/api/t", { headers: { Authorization: "Bearer t" } }),
   );
@@ -80,7 +85,7 @@ test("valid JWT without membership -> 403 not_couple_member", async () => {
 });
 
 test("partner ctx -> handler receives { partner }", async () => {
-  vi.mocked(getPartner).mockResolvedValue(member);
+  vi.mocked(partnerOf).mockResolvedValue(member);
   const route = withContract(
     { output: z.object({ coupleId: z.string() }), auth: "partner" },
     (_in, ctx) => ({ coupleId: ctx.partner.coupleId }),
@@ -89,7 +94,15 @@ test("partner ctx -> handler receives { partner }", async () => {
     new Request("http://x/api/t", { headers: { Authorization: "Bearer t" } }),
   );
   expect(await res.json()).toEqual({ data: { coupleId: "c1" } });
-  expect(getPartner).toHaveBeenCalledWith("t");
+  expect(serverClient).toHaveBeenCalledWith("t");
+  expect(partnerOf).toHaveBeenCalledWith(sb, "t");
+});
+
+test("partner ctx -> handler receives the request Supabase client", async () => {
+  vi.mocked(partnerOf).mockResolvedValue(member);
+  const handler = vi.fn(() => ({}));
+  await okRoute(handler)(new Request("http://x/api/t", { headers: { Authorization: "Bearer t" } }));
+  expect(handler).toHaveBeenCalledWith(undefined, { partner, sb });
 });
 
 test("cookie POST with foreign Origin -> 403 forbidden, nothing called", async () => {
@@ -99,7 +112,8 @@ test("cookie POST with foreign Origin -> 403 forbidden, nothing called", async (
   expect(res.status).toBe(403);
   expect(await res.json()).toEqual({ error: { code: "forbidden", message: "origin mismatch" } });
   expect(handler).not.toHaveBeenCalled();
-  expect(getPartner).not.toHaveBeenCalled();
+  expect(serverClient).not.toHaveBeenCalled();
+  expect(partnerOf).not.toHaveBeenCalled();
 });
 
 test("cookie POST without Origin -> 403 forbidden", async () => {
@@ -109,12 +123,12 @@ test("cookie POST without Origin -> 403 forbidden", async () => {
 });
 
 test("cookie POST with same Origin -> 200", async () => {
-  vi.mocked(getPartner).mockResolvedValue(member);
+  vi.mocked(partnerOf).mockResolvedValue(member);
   expect((await okRoute()(post({}, { Origin: "http://x", Host: "x" }))).status).toBe(200);
 });
 
 test("x-forwarded-host wins over host", async () => {
-  vi.mocked(getPartner).mockResolvedValue(member);
+  vi.mocked(partnerOf).mockResolvedValue(member);
   const headers = {
     Origin: "https://app.example",
     Host: "localhost:3000",
@@ -124,12 +138,12 @@ test("x-forwarded-host wins over host", async () => {
 });
 
 test("Bearer POST without Origin -> 200 (S13 exempt)", async () => {
-  vi.mocked(getPartner).mockResolvedValue(member);
+  vi.mocked(partnerOf).mockResolvedValue(member);
   expect((await okRoute()(post({}, { Authorization: "Bearer t" }))).status).toBe(200);
 });
 
 test("cookie GET without Origin -> 200", async () => {
-  vi.mocked(getPartner).mockResolvedValue(member);
+  vi.mocked(partnerOf).mockResolvedValue(member);
   expect((await okRoute()(new Request("http://x/api/t"))).status).toBe(200);
 });
 

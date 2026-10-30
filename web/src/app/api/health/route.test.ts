@@ -2,7 +2,7 @@ import { expect, test, vi } from "vitest";
 
 import { GET } from "./route";
 
-vi.mock("@/shared/supabase/server", () => ({ getPartner: vi.fn() }));
+vi.mock("@/shared/supabase/server", () => ({ serverClient: vi.fn(), partnerOf: vi.fn() }));
 
 test("/api/health -> 200 {data:{ok:true}}", async () => {
   const res = await GET(new Request("http://x/api/health"));

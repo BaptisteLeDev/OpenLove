@@ -32,6 +32,8 @@ test("Partenaire logs in on web", async ({ page }) => {
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByText(fr.home.milestone.title)).toBeVisible();
   await expect(page.getByText(/\d jours/).first()).toBeVisible();
+  await expect(page.getByText(SEED.specialDates.shared)).toBeVisible();
+  await expect(page.getByText(SEED.specialDates.private)).toHaveCount(0);
   await page.getByRole("button", { name: fr.home.logout }).click();
   await expect(page).toHaveURL(/\/login$/);
 });

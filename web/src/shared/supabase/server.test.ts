@@ -1,6 +1,6 @@
 import { beforeEach, expect, test, vi } from "vitest";
 
-import { getPartner } from "./server";
+import { partnerOf, serverClient } from "./server";
 
 const getUser = vi.fn();
 const maybeSingle = vi.fn();
@@ -25,7 +25,7 @@ beforeEach(() => {
 });
 
 test("member -> partner with couple and role", async () => {
-  expect(await getPartner()).toEqual({
+  expect(await partnerOf(await serverClient(), undefined)).toEqual({
     ok: true,
     partner: { userId: "u1", coupleId: "c1", role: "partner_b" },
   });
@@ -36,17 +36,23 @@ test("member -> partner with couple and role", async () => {
 
 test("no membership row -> not_couple_member", async () => {
   maybeSingle.mockResolvedValue({ data: null, error: null });
-  expect(await getPartner()).toEqual({ ok: false, code: "not_couple_member" });
+  expect(await partnerOf(await serverClient(), undefined)).toEqual({
+    ok: false,
+    code: "not_couple_member",
+  });
 });
 
 test("getUser error -> unauthorized, no membership query", async () => {
   getUser.mockResolvedValue({ data: { user: null }, error: new Error("bad") });
-  expect(await getPartner("t")).toEqual({ ok: false, code: "unauthorized" });
+  expect(await partnerOf(await serverClient("t"), "t")).toEqual({
+    ok: false,
+    code: "unauthorized",
+  });
   expect(from).not.toHaveBeenCalled();
 });
 
 test("bearer -> client carries Authorization header and getUser(token)", async () => {
-  await getPartner("t");
+  await partnerOf(await serverClient("t"), "t");
   expect(create).toHaveBeenCalledWith(
     "http://127.0.0.1:54321",
     "a",
@@ -56,7 +62,7 @@ test("bearer -> client carries Authorization header and getUser(token)", async (
 });
 
 test("no bearer -> cookie session, no Authorization header", async () => {
-  await getPartner();
+  await partnerOf(await serverClient(), undefined);
   expect(create).toHaveBeenCalledWith(
     "http://127.0.0.1:54321",
     "a",

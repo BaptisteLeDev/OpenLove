@@ -6,12 +6,16 @@ import fr from "@/shared/i18n/messages/fr.json";
 
 import HomePage from "./page";
 
-const getPartner = vi.fn();
-const getMilestone = vi.fn();
+const sb = { tag: "sb" };
+const partnerOf = vi.fn();
+const getHome = vi.fn();
 
-vi.mock("@/shared/supabase/server", () => ({ getPartner: () => getPartner() }));
-vi.mock("@/features/home/server/getMilestone", () => ({
-  getMilestone: (id: string) => getMilestone(id),
+vi.mock("@/shared/supabase/server", () => ({
+  serverClient: async () => sb,
+  partnerOf: () => partnerOf(),
+}));
+vi.mock("@/features/home/server/getHome", () => ({
+  getHome: (...a: unknown[]) => getHome(...a),
 }));
 vi.mock("@/features/couple/server/auth", () => ({ signOut: vi.fn() }));
 vi.mock("next/navigation", () => ({
@@ -26,17 +30,20 @@ vi.mock("next-intl/server", () => ({
 
 beforeEach(() => {
   vi.clearAllMocks();
-  getMilestone.mockResolvedValue({ years: 6, months: 8, days: 5, totalDays: 2439 });
+  getHome.mockResolvedValue({
+    milestone: { years: 6, months: 8, days: 5, totalDays: 2439 },
+    upcomingDate: null,
+  });
 });
 
 test("not a couple member -> redirect to /login", async () => {
-  getPartner.mockResolvedValue({ ok: false, code: "not_couple_member" });
+  partnerOf.mockResolvedValue({ ok: false, code: "not_couple_member" });
   await expect(HomePage()).rejects.toThrow("redirect:/login");
-  expect(getMilestone).not.toHaveBeenCalled();
+  expect(getHome).not.toHaveBeenCalled();
 });
 
-test("member -> Compteur of their Couple and logout button", async () => {
-  getPartner.mockResolvedValue({
+test("member -> Compteur, Prochaine date and logout button", async () => {
+  partnerOf.mockResolvedValue({
     ok: true,
     partner: { userId: "u", coupleId: "c1", role: "partner_a" },
   });
@@ -45,7 +52,8 @@ test("member -> Compteur of their Couple and logout button", async () => {
       {await HomePage()}
     </NextIntlClientProvider>,
   );
-  expect(getMilestone).toHaveBeenCalledWith("c1");
+  expect(getHome).toHaveBeenCalledWith(sb, "c1");
   expect(screen.getByText(fr.home.milestone.title)).toBeTruthy();
+  expect(screen.getByText(fr.home.upcomingDate.title)).toBeTruthy();
   expect(screen.getByRole("button", { name: fr.home.logout })).toBeTruthy();
 });

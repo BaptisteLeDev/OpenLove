@@ -8,6 +8,7 @@ export const SEED = {
     stranger: "stranger@example.com",
   },
   startDate: "2020-02-14",
+  specialDates: { shared: "Anniversaire de rencontre", private: "Surprise de partner_b" },
 } as const;
 
 export function localAdmin(
@@ -57,6 +58,15 @@ export async function seed(admin: SupabaseClient): Promise<{ coupleId: string }>
     { user_id: b, couple_id: coupleId, role: "partner_b" },
   ]);
   if (members.error) throw members.error;
+
+  const inDays = (n: number) => new Date(Date.now() + n * 86_400_000).toISOString().slice(0, 10);
+  const deleted = await admin.from("special_dates").delete().eq("couple_id", coupleId);
+  if (deleted.error) throw deleted.error;
+  const dates = await admin.from("special_dates").insert([
+    { couple_id: coupleId, label: SEED.specialDates.shared, date: inDays(10) },
+    { couple_id: coupleId, label: SEED.specialDates.private, date: inDays(5), private_to: b },
+  ]);
+  if (dates.error) throw dates.error;
   return { coupleId };
 }
 

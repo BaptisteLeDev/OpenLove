@@ -1,0 +1,71 @@
+{
+  "valid": [
+    {
+      "milestone": {
+        "years": 1,
+        "months": 2,
+        "days": 3,
+        "totalDays": 430
+      },
+      "upcomingDate": {
+        "label": "Anniversaire",
+        "date": "2026-11-05",
+        "inDays": 6
+      }
+    },
+    {
+      "milestone": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "totalDays": 0
+      },
+      "upcomingDate": null
+    }
+  ],
+  "invalid": [
+    {
+      "milestone": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "totalDays": 0
+      }
+    },
+    {
+      "milestone": {
+        "years": 1,
+        "months": 2,
+        "days": 3,
+        "totalDays": 430
+      },
+      "upcomingDate": {
+        "label": "Anniversaire",
+        "date": "2026-11-05",
+        "inDays": 31
+      }
+    },
+    {
+      "milestone": {
+        "years": 1,
+        "months": 2,
+        "days": 3,
+        "totalDays": 430
+      },
+      "upcomingDate": {
+        "label": "Anniversaire",
+        "date": "05/11/2026",
+        "inDays": 6
+      }
+    },
+    {
+      "milestone": {
+        "years": 1,
+        "months": 2,
+        "days": 3,
+        "totalDays": -1
+      },
+      "upcomingDate": null
+    }
+  ]
+}
