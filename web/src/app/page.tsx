@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { signOut } from "@/features/couple/server/auth";
@@ -18,6 +19,9 @@ export default async function HomePage() {
           {t("logout")}
         </button>
       </form>
+      <Link href="/settings" className="rounded-full border px-4 py-2">
+        {t("settings")}
+      </Link>
     </main>
   );
 }

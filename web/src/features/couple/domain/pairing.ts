@@ -4,3 +4,5 @@ export const PAIRING_LIMIT = { max: 10, windowSeconds: 900 };
 export function pairingUri(instanceUrl: string, code: string): string {
   return `openlove://pair?instance=${encodeURIComponent(instanceUrl)}&code=${code}`;
 }
+
+export type PairingQr = { qr: string; expiresAt: string };

@@ -28,8 +28,20 @@
     "invalid": "E-mail ou mot de passe incorrect.",
     "refused": "Ce compte ne fait pas partie de ce couple."
   },
+  "settings": {
+    "title": "Réglages",
+    "pairing": {
+      "title": "Appairer l'app Android",
+      "intro": "Scannez ce QR code depuis l'app. Il expire après 5 minutes et ne sert qu'une fois.",
+      "show": "Afficher le QR code",
+      "qrAlt": "QR code d'appairage",
+      "expires": "Expire à {time}",
+      "refused": "Action refusée."
+    }
+  },
   "home": {
     "logout": "Se déconnecter",
+    "settings": "Réglages",
     "milestone": {
       "title": "Ensemble depuis",
       "totalDays": "{count, plural, =0 {0 jour} one {# jour} other {# jours}}",
