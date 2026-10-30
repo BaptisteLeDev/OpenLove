@@ -74,3 +74,10 @@ export function adminClient(): SupabaseClient {
     auth: { persistSession: false },
   }));
 }
+
+// Anon key, no session: exchanges a token hash for a session the caller then owns.
+export function anonClient(): SupabaseClient {
+  return createClient(env().SUPABASE_URL, env().SUPABASE_ANON_KEY, {
+    auth: { persistSession: false },
+  });
+}
