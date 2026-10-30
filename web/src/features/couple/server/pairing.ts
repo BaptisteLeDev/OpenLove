@@ -6,7 +6,8 @@ import { clientIp } from "@/shared/http/clientIp";
 import { ApiError } from "@/shared/http/withContract";
 import { adminClient, anonClient, type Partner } from "@/shared/supabase/server";
 
-import { PAIRING_LIMIT, PAIRING_TTL_SECONDS } from "../domain/pairing";
+import { PAIRING_LIMIT } from "../domain/limits";
+import { PAIRING_TTL_SECONDS } from "../domain/pairing";
 import { hitRateLimit } from "./rateLimit";
 
 const sha256 = (code: string) => createHash("sha256").update(code).digest("hex");

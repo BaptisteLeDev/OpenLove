@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
-type State = { error?: "invalid" | "refused" };
+type State = { error?: "invalid" | "refused" | "rate_limited" };
 
 export function LoginForm({ action }: { action: (prev: State, form: FormData) => Promise<State> }) {
   const t = useTranslations("login");
@@ -29,7 +29,9 @@ export function LoginForm({ action }: { action: (prev: State, form: FormData) =>
           className="rounded border p-2"
         />
       </label>
-      {state.error && <p role="alert">{t(state.error)}</p>}
+      {state.error && (
+        <p role="alert">{t(state.error === "rate_limited" ? "rateLimited" : state.error)}</p>
+      )}
       <button
         type="submit"
         disabled={pending}
