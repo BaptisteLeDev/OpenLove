@@ -1,6 +1,6 @@
 import type { EnvCheckItem } from "@/shared/envChecklist";
 
-const steps: readonly { id: "vercel" | "supabase"; prefixes: readonly string[] }[] = [
+export const steps: readonly { id: "vercel" | "supabase"; prefixes: readonly string[] }[] = [
   { id: "vercel", prefixes: [] },
   { id: "supabase", prefixes: ["SUPABASE_", "NEXT_PUBLIC_SUPABASE_"] },
 ];

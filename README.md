@@ -60,6 +60,7 @@ installation Docker/VPS, locale anglaise.
 1. Cliquer sur **Deploy to Vercel** (lien ajouté à la première version).
 2. Ouvrir ton nouveau site : la page **/setup** te guide pour Supabase, Firebase et les clés à
    coller dans Vercel, en vérifiant chacune en direct.
+   Étapes détaillées : [docs/install.md](docs/install.md).
 3. Renseigner vos prénoms, la date de début et la couleur. Terminé.
 4. Android : télécharger l'APK depuis Releases, ouvrir **Réglages** sur le web, scanner le QR code.
 
@@ -142,6 +143,7 @@ install, English locale.
 1. Click **Deploy to Vercel** (link added at first release).
 2. Open your new site: the **/setup** page walks you through Supabase, Firebase and the keys to
    paste into Vercel, checking each one live.
+   Step-by-step guide: [docs/install.md](docs/install.md).
 3. Set your names, start date and color. Done.
 4. Android: download the APK from Releases, open **Settings** on the web, scan the QR code.
 
