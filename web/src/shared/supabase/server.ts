@@ -1,6 +1,6 @@
 import "server-only";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import type { NextRequest, NextResponse } from "next/server";
 
@@ -65,4 +65,12 @@ export function proxyClient(req: NextRequest) {
     return res;
   };
   return { sb, respond };
+}
+
+// Service role bypasses RLS: only for server modules that re-check authorization themselves.
+let admin: SupabaseClient | undefined;
+export function adminClient(): SupabaseClient {
+  return (admin ??= createClient(env().SUPABASE_URL, env().SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false },
+  }));
 }
