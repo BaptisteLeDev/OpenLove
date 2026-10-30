@@ -7,6 +7,7 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.Json
 
 typealias HexColor =
     @Serializable(with = HexColorSerializer::class)
@@ -17,7 +18,13 @@ data class ThemeResponse(
     val seed: HexColor,
     val light: ColorRoles,
     val dark: ColorRoles,
-)
+) {
+    fun encode() = Json.encodeToString(this)
+
+    companion object {
+        fun decode(text: String) = Json.decodeFromString<ThemeResponse>(text)
+    }
+}
 
 @Serializable
 data class ColorRoles(
