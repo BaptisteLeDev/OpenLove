@@ -34,3 +34,14 @@ test("refused state shows the refused alert", async () => {
   expect((await screen.findByRole("alert")).textContent).toBe(fr.login.refused);
   expect(action).toHaveBeenCalled();
 });
+
+test("rate limited state shows the rate limit alert", async () => {
+  const action = vi.fn(async () => ({ error: "rate_limited" as const }));
+  renderForm(action);
+  fireEvent.change(screen.getByLabelText(fr.login.email), {
+    target: { value: "x@example.com" },
+  });
+  fireEvent.change(screen.getByLabelText(fr.login.password), { target: { value: "pw" } });
+  fireEvent.click(screen.getByRole("button", { name: fr.login.submit }));
+  expect((await screen.findByRole("alert")).textContent).toBe(fr.login.rate_limited);
+});

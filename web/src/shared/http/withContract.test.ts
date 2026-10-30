@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { partnerOf, serverClient } from "@/shared/supabase/server";
 
-import { withContract } from "./withContract";
+import { ApiError, withContract } from "./withContract";
 
 const sb = { tag: "sb" };
 
@@ -102,7 +102,7 @@ test("partner ctx -> handler receives the request Supabase client", async () => 
   vi.mocked(partnerOf).mockResolvedValue(member);
   const handler = vi.fn(() => ({}));
   await okRoute(handler)(new Request("http://x/api/t", { headers: { Authorization: "Bearer t" } }));
-  expect(handler).toHaveBeenCalledWith(undefined, { partner, sb });
+  expect(handler).toHaveBeenCalledWith(undefined, { partner, sb, req: expect.any(Request) });
 });
 
 test("cookie POST with foreign Origin -> 403 forbidden, nothing called", async () => {
@@ -158,4 +158,28 @@ test("public handler ctx has no user", () => {
     expect(ctx.partner).toBeUndefined();
     return {};
   });
+});
+
+test("ApiError -> its status and code in the envelope, not logged", async () => {
+  const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+  const route = withContract({ output: z.object({}), auth: "public" }, () => {
+    throw new ApiError(429, "rate_limited", "too many attempts");
+  });
+  const res = await route(new Request("http://x/api/t"));
+  expect(res.status).toBe(429);
+  expect(await res.json()).toEqual({
+    error: { code: "rate_limited", message: "too many attempts" },
+  });
+  expect(spy).not.toHaveBeenCalled();
+  spy.mockRestore();
+});
+
+test("handler ctx carries the request for public routes", async () => {
+  const seen: string[] = [];
+  const route = withContract({ output: z.object({}), auth: "public" }, (_in, ctx) => {
+    seen.push(ctx.req.url);
+    return {};
+  });
+  await route(new Request("http://x/api/t?a=1"));
+  expect(seen).toEqual(["http://x/api/t?a=1"]);
 });

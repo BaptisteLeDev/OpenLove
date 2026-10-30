@@ -4,8 +4,20 @@ import { z } from "zod";
 import { partnerOf, type Partner, serverClient } from "@/shared/supabase/server";
 
 type Auth = "partner" | "public";
-type Ctx<A extends Auth> = A extends "partner" ? { partner: Partner; sb: SupabaseClient } : object;
+type Ctx<A extends Auth> = { req: Request } & (A extends "partner"
+  ? { partner: Partner; sb: SupabaseClient }
+  : object);
 type Schema = z.ZodType;
+
+export class ApiError extends Error {
+  constructor(
+    readonly status: number,
+    readonly code: string,
+    message: string,
+  ) {
+    super(message);
+  }
+}
 
 function fail(status: number, code: string, message: string) {
   return Response.json({ error: { code, message } }, { status });
@@ -57,13 +69,15 @@ export function withContract<
       if (who instanceof Response) return who;
       const parsed = opts.input ? opts.input.safeParse(await readInput(req)) : undefined;
       if (parsed && !parsed.success) return fail(400, "validation_failed", "invalid input");
-      const out = opts.output.safeParse(await handler(parsed?.data as z.output<I>, who as Ctx<A>));
+      const ctx = { req, ...who } as Ctx<A>;
+      const out = opts.output.safeParse(await handler(parsed?.data as z.output<I>, ctx));
       if (!out.success) {
         console.error("withContract: output mismatch", out.error.issues);
         return fail(500, "internal", "internal error");
       }
       return Response.json({ data: out.data });
     } catch (err) {
+      if (err instanceof ApiError) return fail(err.status, err.code, err.message);
       console.error("withContract: handler threw", err);
       return fail(500, "internal", "internal error");
     }

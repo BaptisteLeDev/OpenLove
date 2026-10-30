@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
-type State = { error?: "invalid" | "refused" };
+type State = { error?: "invalid" | "refused" | "rate_limited" };
 
 export function LoginForm({ action }: { action: (prev: State, form: FormData) => Promise<State> }) {
   const t = useTranslations("login");
