@@ -12,7 +12,7 @@ Web stays outside this stack ([ADR 0001](0001-monorepo-api-only-backend.md)).
   (current Android `:app`). `iosApp/` (SwiftUI) comes with E15.
 - `shared` holds: Ktor API client (engine via `expect`/`actual`: OkHttp on Android, Darwin on iOS),
   envelope and contract DTOs, `kotlinx.serialization` `Json` with the tolerant config of
-  [ADR 0008](0008-android-json-tolerant-prod.md), SQLDelight cache, session store as `expect`/`actual`.
+  [ADR 0008](0008-android-json-tolerant-prod.md), SQLDelight cache, session store as an interface in `commonMain` (Android impl in `androidApp`; `expect` would force an iOS actual now).
 - UI stays native: Compose Material3 on Android, SwiftUI on iOS.
 - Rejected for now: Compose Multiplatform UI; Swift Export (until stable). iOS consumes `shared`
   through SKIE + XCFramework.
