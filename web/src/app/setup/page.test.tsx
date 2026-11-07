@@ -37,7 +37,11 @@ test("renders the Vercel and Supabase step guides in order", () => {
     within(container)
       .getAllByRole("heading", { level: 2 })
       .map((h) => h.textContent),
-  ).toEqual([fr.setup.steps.vercel.title, fr.setup.steps.supabase.title]);
+  ).toEqual([
+    fr.setup.steps.vercel.title,
+    fr.setup.steps.supabase.title,
+    fr.setup.steps.other.title,
+  ]);
   for (const line of fr.setup.steps.vercel.instructions) {
     expect(container.textContent).toContain(line);
   }

@@ -6,6 +6,7 @@ export const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   NEXT_PUBLIC_SUPABASE_URL: z.url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  MESSAGE_ENCRYPTION_KEY: z.base64().refine((v) => Buffer.from(v, "base64").length === 32),
 });
 
 export const publicEnvSchema = envSchema.pick({

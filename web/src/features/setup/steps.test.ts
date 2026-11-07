@@ -26,9 +26,8 @@ test("unknown key goes to other", () => {
   expect(groups.at(-1)).toEqual({ id: "other", items: [item] });
 });
 
-test("no other group when every key matches", () => {
+test("every schema key lands in exactly one group", () => {
   const groups = groupByStep(checkEnv(envSchema, {}));
 
-  expect(groups.map((group) => group.id)).toEqual(["vercel", "supabase"]);
   expect(groups.flatMap((group) => group.items)).toHaveLength(Object.keys(envSchema.shape).length);
 });

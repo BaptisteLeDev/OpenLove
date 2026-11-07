@@ -8,7 +8,7 @@ Web and Android must stay in sync. The source app let the web talk to Supabase f
 and its Android branch had to mirror that surface by hand.
 
 ## Decision
-One repo: `web/` (Next.js UI + `/api`), `android/`, `contracts/`, `design/`, `supabase/`. No pnpm
+One repo: `web/` (Next.js UI + `/api`), `mobile/` (KMP, see [0009](0009-kmp-shared-mobile-core.md)), `contracts/`, `design/`, `supabase/`. No pnpm
 workspace. Android calls only `/api/*` with a Bearer JWT. Contracts are Zod schemas exported as
 JSON fixtures; Android decodes them in a contract test (no code generation).
 

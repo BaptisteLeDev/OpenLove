@@ -18,6 +18,9 @@ export default async function HomePage() {
     <main className="flex min-h-dvh flex-col items-center justify-center gap-6 p-6">
       <Milestone value={home.milestone} />
       <UpcomingDate value={home.upcomingDate} />
+      <Link href="/messages" className="rounded-full border px-4 py-2">
+        {t("messages")}
+      </Link>
       <form action={signOut}>
         <button type="submit" className="rounded-full border px-4 py-2">
           {t("logout")}

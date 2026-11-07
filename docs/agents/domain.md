@@ -20,10 +20,10 @@ Single-context repo:
 │   ├── 0001-monorepo-api-only-backend.md
 │   └── ...
 ├── web/
-└── android/
+└── mobile/
 ```
 
-`web/` and `android/` are two clients of ONE domain: they share `CONTEXT.md`, never fork vocabulary.
+`web/` and `mobile/` are two clients of ONE domain: they share `CONTEXT.md`, never fork vocabulary.
 
 ## Use the glossary's vocabulary
 

@@ -34,7 +34,11 @@ Checklist de sécurité du tableau de bord hébergé :
 - [ ] **Database > Settings** : Enforce SSL activé, restrictions réseau (allowlist). L'app utilise HTTPS, seul Postgres direct est concerné.
 - [ ] **Advisors > Security Advisor** : aucun WARN.
 
+## Autres variables
+
+- `MESSAGE_ENCRYPTION_KEY` : clé AES-256 des Messages, 32 octets en base64 (`openssl rand -base64 32`). Secrète, jamais en base. La perdre rend les Messages illisibles.
+
 ---
 
-Firebase (notifications) et les clés générées (chiffrement, rappels) seront ajoutés avec les
+Firebase (notifications) et les autres clés générées (rappels) seront ajoutés avec les
 fonctionnalités qui les utilisent.
