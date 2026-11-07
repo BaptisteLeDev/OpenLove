@@ -3,12 +3,21 @@ import { z } from "zod";
 export const pairingRequest = z.strictObject({ code: z.string().min(16).max(128) });
 export type PairingRequest = z.infer<typeof pairingRequest>;
 
-export const pairingResponse = z.strictObject({
+export const signInRequest = z.strictObject({
+  email: z.email(),
+  password: z.string().min(1).max(1024),
+});
+export type SignInRequest = z.infer<typeof signInRequest>;
+
+export const refreshRequest = z.strictObject({ refreshToken: z.string().min(1).max(4096) });
+export type RefreshRequest = z.infer<typeof refreshRequest>;
+
+export const sessionResponse = z.strictObject({
   accessToken: z.string().min(1),
   refreshToken: z.string().min(1),
   expiresAt: z.number().int(),
 });
-export type PairingResponse = z.infer<typeof pairingResponse>;
+export type SessionResponse = z.infer<typeof sessionResponse>;
 
 export const examples = {
   valid: [{ accessToken: "access-token", refreshToken: "refresh-token", expiresAt: 1798761600 }],

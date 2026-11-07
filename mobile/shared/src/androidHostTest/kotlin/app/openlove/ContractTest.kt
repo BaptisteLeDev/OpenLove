@@ -1,10 +1,12 @@
 package app.openlove
 
+import app.openlove.core.api.ErrorResponse
 import app.openlove.core.api.HealthResponse
+import app.openlove.core.api.HomeResponse
 import app.openlove.core.api.MessagesResponse
+import app.openlove.core.api.Session
 import app.openlove.core.api.ThemeResponse
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -19,8 +21,11 @@ class ContractTest {
 
     private val serializers: Map<String, KSerializer<*>> =
         mapOf(
+            "error.json" to ErrorResponse.serializer(),
             "health.json" to HealthResponse.serializer(),
+            "home.json" to HomeResponse.serializer(),
             "messages.json" to MessagesResponse.serializer(),
+            "session.json" to Session.serializer(),
             "theme.json" to ThemeResponse.serializer(),
         )
 
@@ -49,7 +54,7 @@ class ContractTest {
                 json.decodeFromJsonElement(serializer, entry)
             }
             for (entry in invalid) {
-                assertThrows("${file.name}: $entry", SerializationException::class.java) {
+                assertThrows("${file.name}: $entry", IllegalArgumentException::class.java) {
                     json.decodeFromJsonElement(serializer, entry)
                 }
             }

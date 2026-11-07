@@ -1,7 +1,7 @@
 import "server-only";
 import { createHash, randomBytes } from "node:crypto";
 
-import type { PairingRequest, PairingResponse } from "@/shared/contracts/pairing";
+import type { PairingRequest, SessionResponse } from "@/shared/contracts/session";
 import { clientIp } from "@/shared/http/clientIp";
 import { ApiError } from "@/shared/http/withContract";
 import { adminClient, anonClient, type Partner } from "@/shared/supabase/server";
@@ -36,7 +36,7 @@ export async function createPairingCode(
 export async function exchangePairingCode(
   { code }: PairingRequest,
   { req }: { req: Request },
-): Promise<PairingResponse> {
+): Promise<SessionResponse> {
   const allowed = await hitRateLimit(
     `pairing:${clientIp(req.headers)}`,
     PAIRING_LIMIT.max,
@@ -65,7 +65,7 @@ export async function exchangePairingCode(
   return mintSession(row.user_id);
 }
 
-async function mintSession(userId: string): Promise<PairingResponse> {
+async function mintSession(userId: string): Promise<SessionResponse> {
   const admin = adminClient();
   const { data: user, error: userError } = await admin.auth.admin.getUserById(userId);
   if (userError) throw userError;
