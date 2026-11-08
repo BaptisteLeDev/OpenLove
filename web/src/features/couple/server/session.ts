@@ -1,4 +1,6 @@
 import "server-only";
+import { isAuthApiError } from "@supabase/supabase-js";
+
 import type { RefreshRequest, SessionResponse, SignInRequest } from "@/shared/contracts/session";
 import { clientIp } from "@/shared/http/clientIp";
 import { ApiError } from "@/shared/http/withContract";
@@ -52,6 +54,12 @@ export async function refreshSession({ refreshToken }: RefreshRequest): Promise<
   const { data, error } = await anonClient().auth.refreshSession({
     refresh_token: refreshToken,
   });
-  if (error || !data.session) throw new ApiError(401, "unauthorized", "session expired");
+  if (error) {
+    // Android wipes its session on 401: only a refused token may say so, not an Auth outage.
+    if (!isAuthApiError(error) || error.status >= 500) throw error;
+    if (error.status === 429) throw new ApiError(429, "rate_limited", "too many attempts");
+    throw new ApiError(401, "unauthorized", "session expired");
+  }
+  if (!data.session) throw new ApiError(401, "unauthorized", "session expired");
   return toSession(data.session);
 }
