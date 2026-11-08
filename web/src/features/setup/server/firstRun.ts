@@ -4,7 +4,8 @@ import { z } from "zod";
 
 import { adminClient, serverClient } from "@/shared/supabase/server";
 
-export type FirstRunState = { error?: "invalid" | "exists" };
+import type { FirstRunState } from "../firstRunState";
+import { hasCouple } from "./couple";
 
 const name = z.string().trim().min(1).max(50);
 const input = z.object({
@@ -27,6 +28,8 @@ export async function createFirstCouple(
   if (!parsed.success) return { error: "invalid" };
   const { email, password, partnerAName, partnerBName, startDate, seed } = parsed.data;
 
+  if (await hasCouple()) return { error: "exists" };
+
   const admin = adminClient();
   const created = await admin.auth.admin.createUser({ email, password, email_confirm: true });
   if (created.error || !created.data.user) return { error: "invalid" };
@@ -40,7 +43,8 @@ export async function createFirstCouple(
     p_seed: seed,
   });
   if (error || data === null) {
-    await admin.auth.admin.deleteUser(userId);
+    const cleanup = await admin.auth.admin.deleteUser(userId);
+    if (cleanup.error) console.error("orphan auth user", userId, cleanup.error.message);
     if (error) throw new Error(`create_couple failed: ${error.message}`);
     return { error: "exists" };
   }

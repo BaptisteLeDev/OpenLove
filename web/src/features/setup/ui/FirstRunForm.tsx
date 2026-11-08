@@ -2,7 +2,7 @@
 import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 
-type State = { error?: "invalid" | "exists" };
+import type { FirstRunState } from "../firstRunState";
 
 const FIELDS = [
   { name: "email", type: "email", autoComplete: "email" },
@@ -16,7 +16,7 @@ export function FirstRunForm({
   action,
   defaultSeed,
 }: {
-  action: (prev: State, form: FormData) => Promise<State>;
+  action: (prev: FirstRunState, form: FormData) => Promise<FirstRunState>;
   defaultSeed: string;
 }) {
   const t = useTranslations("setup.firstRun");

@@ -6,8 +6,10 @@ const createUser = vi.fn();
 const deleteUser = vi.fn();
 const rpc = vi.fn();
 const signInWithPassword = vi.fn();
+const hasCouple = vi.fn();
 
 vi.mock("server-only", () => ({}));
+vi.mock("./couple", () => ({ hasCouple: () => hasCouple() }));
 vi.mock("@/shared/supabase/server", () => ({
   adminClient: () => ({ auth: { admin: { createUser, deleteUser } }, rpc }),
   serverClient: async () => ({ auth: { signInWithPassword } }),
@@ -35,6 +37,7 @@ function form(over: Record<string, string> = {}) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  hasCouple.mockResolvedValue(false);
   createUser.mockResolvedValue({ data: { user: { id: "u1" } }, error: null });
   deleteUser.mockResolvedValue({ error: null });
   rpc.mockResolvedValue({ data: "c1", error: null });
@@ -93,4 +96,19 @@ test("rpc error -> user deleted, rejects", async () => {
   rpc.mockResolvedValue({ data: null, error: { message: "boom" } });
   await expect(createFirstCouple({}, form())).rejects.toThrow();
   expect(deleteUser).toHaveBeenCalledWith("u1");
+});
+
+test("Couple already exists -> exists, no user created", async () => {
+  hasCouple.mockResolvedValue(true);
+  expect(await createFirstCouple({}, form())).toEqual({ error: "exists" });
+  expect(createUser).not.toHaveBeenCalled();
+});
+
+test("cleanup failure is logged, exists still returned", async () => {
+  const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+  rpc.mockResolvedValue({ data: null, error: null });
+  deleteUser.mockResolvedValue({ error: { message: "nope" } });
+  expect(await createFirstCouple({}, form())).toEqual({ error: "exists" });
+  expect(spy).toHaveBeenCalledWith("orphan auth user", "u1", "nope");
+  spy.mockRestore();
 });
