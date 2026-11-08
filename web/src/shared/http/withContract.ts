@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
+import type { ErrorCode } from "@/shared/contracts/error";
 import { partnerOf, type Partner, serverClient } from "@/shared/supabase/server";
 
 type Auth = "partner" | "public";
@@ -12,14 +13,14 @@ type Schema = z.ZodType;
 export class ApiError extends Error {
   constructor(
     readonly status: number,
-    readonly code: string,
+    readonly code: ErrorCode,
     message: string,
   ) {
     super(message);
   }
 }
 
-function fail(status: number, code: string, message: string) {
+function fail(status: number, code: ErrorCode, message: string) {
   return Response.json({ error: { code, message } }, { status });
 }
 

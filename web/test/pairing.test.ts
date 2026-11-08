@@ -6,7 +6,7 @@ import { beforeAll, describe, expect, test, vi } from "vitest";
 
 import { POST } from "@/app/api/pairing/route";
 import { createPairingCode } from "@/features/couple/server/pairing";
-import { pairingResponse } from "@/shared/contracts/pairing";
+import { sessionResponse } from "@/shared/contracts/session";
 import type { Partner } from "@/shared/supabase/server";
 
 import { ensureUser, localAdmin, SEED, seed } from "../scripts/seed";
@@ -59,7 +59,7 @@ describe.skipIf(!up)("POST /api/pairing", () => {
     const res = await exchange(code);
     expect(res.status).toBe(200);
     const { data } = await res.json();
-    expect(pairingResponse.safeParse(data).success).toBe(true);
+    expect(sessionResponse.safeParse(data).success).toBe(true);
     const anon = createClient(url, anonKey, { auth: { persistSession: false } });
     const { data: user } = await anon.auth.getUser(data.accessToken);
     expect(user.user?.email).toBe(SEED.emails.a);

@@ -1,0 +1,27 @@
+{
+  "valid": [
+    {
+      "error": {
+        "code": "unauthorized",
+        "message": "invalid pairing code"
+      }
+    }
+  ],
+  "invalid": [
+    {
+      "error": {
+        "code": "unauthorized"
+      }
+    },
+    {
+      "error": "unauthorized"
+    },
+    {
+      "error": {
+        "code": "internal",
+        "message": "x",
+        "extra": true
+      }
+    }
+  ]
+}
