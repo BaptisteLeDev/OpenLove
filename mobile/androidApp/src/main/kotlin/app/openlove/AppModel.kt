@@ -37,10 +37,10 @@ class AppModel(
     val theme: StateFlow<ThemeResponse?> = _theme
 
     suspend fun start() {
-        if (!client.isPaired()) {
-            _screen.value = Screen.Pairing()
-            return
-        }
+        if (client.isPaired()) showHome() else _screen.value = Screen.Pairing()
+    }
+
+    private suspend fun showHome() {
         _screen.value =
             try {
                 loadHome()
@@ -72,12 +72,12 @@ class AppModel(
         _screen.value = Screen.Loading
         try {
             begin()
-            _screen.value = loadHome()
         } catch (e: ApiException) {
-            fail(errorOf(e.status, codeStatus))
+            return fail(errorOf(e.status, codeStatus))
         } catch (e: IOException) {
-            fail(PairingError.Unreachable)
+            return fail(PairingError.Unreachable)
         }
+        showHome()
     }
 
     private suspend fun loadHome(): Screen.Home {

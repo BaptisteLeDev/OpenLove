@@ -197,6 +197,17 @@ class AppModelTest {
             scope.cancelAndJoin()
         }
 
+    @Test
+    fun homeFailureAfterPairingKeepsSession() =
+        runTest {
+            homeStatuses += HttpStatusCode.BadGateway
+            val model = newModel()
+            model.pair(link)
+            assertEquals(Screen.Unreachable, model.screen.value)
+            scope.cancelAndJoin()
+            assertEquals(true, storeHolds())
+        }
+
     private suspend fun storeHolds(): Boolean {
         val job = SupervisorJob()
         return (EncryptedSessionStore(sessionFile(), aead, CoroutineScope(job)).read() != null).also { job.cancelAndJoin() }
