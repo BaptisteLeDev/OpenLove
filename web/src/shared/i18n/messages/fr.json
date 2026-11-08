@@ -49,6 +49,18 @@
       "other": {
         "title": "Autres variables"
       }
+    },
+    "firstRun": {
+      "title": "Créer votre couple",
+      "email": "E-mail",
+      "password": "Mot de passe (8 caractères minimum)",
+      "partnerAName": "Prénom du partenaire A",
+      "partnerBName": "Prénom du partenaire B",
+      "startDate": "Début de la relation",
+      "seed": "Couleur de l'application",
+      "submit": "Créer le couple",
+      "invalid": "Vérifiez les champs : e-mail valide, mot de passe de 8 caractères minimum, prénoms et date renseignés.",
+      "exists": "Un couple existe déjà sur cette instance."
     }
   },
   "login": {
@@ -72,6 +84,7 @@
     }
   },
   "home": {
+    "partners": "{a} & {b}",
     "logout": "Se déconnecter",
     "settings": "Réglages",
     "messages": "Messages",

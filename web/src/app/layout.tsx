@@ -7,6 +7,8 @@ import { getThemeCss } from "@/features/theme/server/getTheme";
 
 import "./globals.css";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("app");
   return { title: t("name"), description: t("tagline") };
@@ -17,7 +19,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang={locale}>
       <head>
-        <style>{getThemeCss()}</style>
+        <style>{await getThemeCss()}</style>
       </head>
       <body className="bg-background text-on-background">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
