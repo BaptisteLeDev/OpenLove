@@ -17,8 +17,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.encodeToString
 import java.io.File
+import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.security.GeneralSecurityException
 
 private val ASSOCIATED_DATA = "openlove-session".encodeToByteArray()
 
@@ -64,14 +66,36 @@ class EncryptedSessionStore(
     }
 }
 
+private const val KEYSET_PREFS = "openlove_keystore_prefs"
+
 fun keystoreAead(context: Context): Aead {
     AeadConfig.register()
-    return AndroidKeysetManager
+    return try {
+        buildAead(context)
+    } catch (e: GeneralSecurityException) {
+        resetAndBuild(context)
+    } catch (e: IOException) {
+        resetAndBuild(context)
+    }
+}
+
+// Keystore master key lost (restore, reset): old keyset and session are unreadable.
+private fun resetAndBuild(context: Context): Aead {
+    context
+        .getSharedPreferences(KEYSET_PREFS, Context.MODE_PRIVATE)
+        .edit()
+        .clear()
+        .commit()
+    File(context.filesDir, "session.enc").delete()
+    return buildAead(context)
+}
+
+private fun buildAead(context: Context): Aead =
+    AndroidKeysetManager
         .Builder()
-        .withSharedPref(context, "openlove_session_keyset", "openlove_keystore_prefs")
+        .withSharedPref(context, "openlove_session_keyset", KEYSET_PREFS)
         .withKeyTemplate(KeyTemplates.get("AES256_GCM"))
         .withMasterKeyUri("android-keystore://openlove_session_key")
         .build()
         .keysetHandle
         .getPrimitive(RegistryConfiguration.get(), Aead::class.java)
-}
