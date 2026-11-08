@@ -6,12 +6,13 @@ import { schemeFromSeed, themeCss } from "./scheme";
 
 export async function getTheme() {
   try {
-    const { data } = await adminClient()
+    const { data, error } = await adminClient()
       .from("couples")
       .select("seed")
       .order("created_at")
       .limit(1)
       .maybeSingle();
+    if (error) throw error;
     return schemeFromSeed(data?.seed ?? tokens.seed);
   } catch (err) {
     console.error("getTheme: seed read failed, using default", err);

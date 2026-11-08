@@ -5,8 +5,14 @@ import { themeResponse } from "@/shared/contracts/theme";
 import { GET } from "./route";
 
 vi.mock("@/shared/supabase/server", () => ({
-  adminClient: vi.fn(() => {
-    throw new Error("no env");
+  adminClient: () => ({
+    from: () => ({
+      select: () => ({
+        order: () => ({
+          limit: () => ({ maybeSingle: async () => ({ data: null, error: null }) }),
+        }),
+      }),
+    }),
   }),
   serverClient: vi.fn(),
   partnerOf: vi.fn(),

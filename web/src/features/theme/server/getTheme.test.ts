@@ -35,3 +35,9 @@ test("read throws -> default seed", async () => {
   });
   expect((await getTheme()).seed).toBe(tokens.seed);
 });
+
+test("query error -> default seed and logged", async () => {
+  maybeSingle.mockResolvedValue({ data: null, error: { message: "x" } });
+  expect((await getTheme()).seed).toBe(tokens.seed);
+  expect(console.error).toHaveBeenCalled();
+});
