@@ -1,8 +1,22 @@
 import "server-only";
+import { adminClient } from "@/shared/supabase/server";
+
 import tokens from "../../../../../design/tokens.json";
 import { schemeFromSeed, themeCss } from "./scheme";
 
-// shortcut: default seed only, read the Couple's seed from DB in E2.3.
-export const getTheme = () => schemeFromSeed(tokens.seed);
+export async function getTheme() {
+  try {
+    const { data } = await adminClient()
+      .from("couples")
+      .select("seed")
+      .order("created_at")
+      .limit(1)
+      .maybeSingle();
+    return schemeFromSeed(data?.seed ?? tokens.seed);
+  } catch (err) {
+    console.error("getTheme: seed read failed, using default", err);
+    return schemeFromSeed(tokens.seed);
+  }
+}
 
-export const getThemeCss = () => themeCss(getTheme(), tokens);
+export const getThemeCss = async () => themeCss(await getTheme(), tokens);

@@ -4,7 +4,13 @@ import { themeResponse } from "@/shared/contracts/theme";
 
 import { GET } from "./route";
 
-vi.mock("@/shared/supabase/server", () => ({ serverClient: vi.fn(), partnerOf: vi.fn() }));
+vi.mock("@/shared/supabase/server", () => ({
+  adminClient: vi.fn(() => {
+    throw new Error("no env");
+  }),
+  serverClient: vi.fn(),
+  partnerOf: vi.fn(),
+}));
 vi.mock("server-only", () => ({}));
 
 test("/api/theme -> 200 with a contract-valid scheme, no auth", async () => {
