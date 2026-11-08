@@ -57,3 +57,8 @@ test("wrong password is invalid", async ({ page }) => {
   await expect(page.getByRole("alert")).toHaveText(fr.login.invalid);
   await expect(page).toHaveURL(/\/login$/);
 });
+
+test("/setup once a Couple exists redirects to /login", async ({ page }) => {
+  await page.goto("/setup");
+  await expect(page).toHaveURL(/\/login$/);
+});
