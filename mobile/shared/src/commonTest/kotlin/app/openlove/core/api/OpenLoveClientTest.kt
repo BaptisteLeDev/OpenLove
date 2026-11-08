@@ -15,6 +15,7 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -116,23 +117,26 @@ class OpenLoveClientTest {
             val store = paired
             var refreshes = 0
             val gate = CompletableDeferred<Unit>()
-            var first401 = 0
+            val arrived = Channel<Unit>(2)
             val c =
                 client(store) {
                     if (it.url.encodedPath == "/api/session/refresh") {
                         refreshes++
                         reply(HttpStatusCode.OK, SESSION2)
                     } else if (it.headers[HttpHeaders.Authorization] == "Bearer a1") {
-                        if (++first401 == 2) gate.complete(Unit)
+                        arrived.send(Unit)
                         gate.await()
                         reply(HttpStatusCode.Unauthorized, UNAUTHORIZED)
                     } else {
                         reply(HttpStatusCode.OK, HOME)
                     }
                 }
-            val results = listOf(async { c.home() }, async { c.home() }).awaitAll()
-            assertEquals(2, first401)
-            assertEquals(2, results.size)
+            val calls = listOf(async { c.home() }, async { c.home() })
+            arrived.receive()
+            arrived.receive()
+            gate.complete(Unit)
+            calls.awaitAll()
+            assertEquals(StoredSession(BASE, s2), store.value)
             assertEquals(1, refreshes)
         }
 
@@ -156,16 +160,20 @@ class OpenLoveClientTest {
     fun parallelCallsBothGet401WhenRefreshFails() =
         runTest {
             val gate = CompletableDeferred<Unit>()
-            var first401 = 0
+            val arrived = Channel<Unit>(2)
             val c =
                 client(paired) {
                     if (it.url.encodedPath != "/api/session/refresh") {
-                        if (++first401 == 2) gate.complete(Unit)
+                        arrived.send(Unit)
                         gate.await()
                     }
                     reply(HttpStatusCode.Unauthorized, UNAUTHORIZED)
                 }
-            listOf(async { runCatching { c.home() } }, async { runCatching { c.home() } }).awaitAll().forEach {
+            val calls = listOf(async { runCatching { c.home() } }, async { runCatching { c.home() } })
+            arrived.receive()
+            arrived.receive()
+            gate.complete(Unit)
+            calls.awaitAll().forEach {
                 assertEquals(401, (it.exceptionOrNull() as ApiException).status)
             }
         }
