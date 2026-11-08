@@ -24,6 +24,7 @@ import io.ktor.http.isSuccess
 import kotlinx.coroutines.CompletableJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -112,33 +113,33 @@ class AppModelTest {
             assertEquals(listOf<String?>("Bearer access-token"), homeBearers)
             assertEquals(themeFixture, model.theme.value)
             assertEquals(themeFixture, ThemeCache(File(tmp.root, "theme.json")).read())
-            scope.cancel()
+            scope.cancelAndJoin()
         }
 
     @Test
     fun sessionSurvivesAppRestart() =
         runTest {
             newModel().pair(link)
-            scope.cancel()
+            scope.cancelAndJoin()
             val model = newModel()
             assertNotNull(model.theme.value)
             model.start()
             assertEquals(Screen.Home(homeFixture), model.screen.value)
             assertEquals(1, calls.count { it == "/api/pairing" })
-            scope.cancel()
+            scope.cancelAndJoin()
         }
 
     @Test
     fun restartWithExpiredAccessTokenRefreshes() =
         runTest {
             newModel().pair(link)
-            scope.cancel()
+            scope.cancelAndJoin()
             homeStatuses += HttpStatusCode.Unauthorized
             val model = newModel()
             model.start()
             assertEquals(Screen.Home(homeFixture), model.screen.value)
             assertEquals(1, calls.count { it == "/api/session/refresh" })
-            scope.cancel()
+            scope.cancelAndJoin()
         }
 
     @Test
@@ -148,7 +149,7 @@ class AppModelTest {
             val model = newModel()
             model.pair(link)
             assertEquals(Screen.Pairing(PairingError.CodeExpired), model.screen.value)
-            scope.cancel()
+            scope.cancelAndJoin()
             assertEquals(false, storeHolds())
         }
 
@@ -156,13 +157,13 @@ class AppModelTest {
     fun revokedRefreshTokenBackToPairing() =
         runTest {
             newModel().pair(link)
-            scope.cancel()
+            scope.cancelAndJoin()
             homeStatuses += HttpStatusCode.Unauthorized
             refreshStatus = HttpStatusCode.Unauthorized
             val model = newModel()
             model.start()
             assertEquals(Screen.Pairing(null), model.screen.value)
-            scope.cancel()
+            scope.cancelAndJoin()
             assertEquals(false, storeHolds())
         }
 
@@ -172,7 +173,7 @@ class AppModelTest {
             val model = newModel()
             model.signIn("https://x.test", "a@b.c", "pw")
             assertEquals(Screen.Home(homeFixture), model.screen.value)
-            scope.cancel()
+            scope.cancelAndJoin()
             signInStatus = HttpStatusCode.Forbidden
             calls.clear()
             val other = newModel()
@@ -182,7 +183,7 @@ class AppModelTest {
             other.signIn("x.test", "a@b.c", "pw")
             assertEquals(Screen.Pairing(PairingError.InvalidLink), other.screen.value)
             assertEquals(emptyList<String>(), calls)
-            scope.cancel()
+            scope.cancelAndJoin()
         }
 
     @Test
@@ -193,12 +194,12 @@ class AppModelTest {
             val model = newModel()
             model.pair(link)
             assertEquals(Screen.Pairing(PairingError.Unreachable), model.screen.value)
-            scope.cancel()
+            scope.cancelAndJoin()
         }
 
     private suspend fun storeHolds(): Boolean {
         val job = SupervisorJob()
-        return (EncryptedSessionStore(sessionFile(), aead, CoroutineScope(job)).read() != null).also { job.cancel() }
+        return (EncryptedSessionStore(sessionFile(), aead, CoroutineScope(job)).read() != null).also { job.cancelAndJoin() }
     }
 
     private fun newAead(): Aead {

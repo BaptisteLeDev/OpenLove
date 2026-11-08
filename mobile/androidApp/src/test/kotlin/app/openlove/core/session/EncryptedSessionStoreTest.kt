@@ -9,6 +9,7 @@ import com.google.crypto.tink.aead.AeadConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -40,7 +41,7 @@ class EncryptedSessionStoreTest {
         runBlocking {
             val job = SupervisorJob()
             assertNull(EncryptedSessionStore(file, aead, scope(job)).read())
-            job.cancel()
+            job.cancelAndJoin()
         }
 
     @Test
@@ -48,10 +49,10 @@ class EncryptedSessionStoreTest {
         runBlocking {
             val first = SupervisorJob()
             EncryptedSessionStore(file, aead, scope(first)).write(value)
-            first.cancel()
+            first.cancelAndJoin()
             val second = SupervisorJob()
             assertEquals(value, EncryptedSessionStore(file, aead, scope(second)).read())
-            second.cancel()
+            second.cancelAndJoin()
         }
 
     @Test
@@ -59,7 +60,7 @@ class EncryptedSessionStoreTest {
         runBlocking {
             val job = SupervisorJob()
             EncryptedSessionStore(file, aead, scope(job)).write(value)
-            job.cancel()
+            job.cancelAndJoin()
             val text = String(file.readBytes(), Charsets.ISO_8859_1)
             listOf("access-secret-1", "refresh-secret-2", "love.example.org").forEach {
                 assertFalse(it, text.contains(it))
@@ -71,10 +72,10 @@ class EncryptedSessionStoreTest {
         runBlocking {
             val first = SupervisorJob()
             EncryptedSessionStore(file, aead, scope(first)).write(value)
-            first.cancel()
+            first.cancelAndJoin()
             val second = SupervisorJob()
             assertNull(EncryptedSessionStore(file, newAead(), scope(second)).read())
-            second.cancel()
+            second.cancelAndJoin()
         }
 
     @Test
@@ -83,7 +84,7 @@ class EncryptedSessionStoreTest {
             file.writeText("{")
             val job = SupervisorJob()
             assertNull(EncryptedSessionStore(file, aead, scope(job)).read())
-            job.cancel()
+            job.cancelAndJoin()
         }
 
     @Test
@@ -94,7 +95,7 @@ class EncryptedSessionStoreTest {
             store.write(value)
             store.write(null)
             assertNull(store.read())
-            job.cancel()
+            job.cancelAndJoin()
         }
 
     private fun newAead(): Aead {
