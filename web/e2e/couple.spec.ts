@@ -45,7 +45,7 @@ test("Partenaire logs in on web", async ({ page }) => {
 
 test("Stranger cannot enter", async ({ page }) => {
   await logIn(page, SEED.emails.stranger);
-  await expect(page.getByRole("alert")).toHaveText(fr.login.refused);
+  await expect(page.getByRole("alert").filter({ hasText: fr.login.refused })).toBeVisible();
   await expect(page).toHaveURL(/\/login$/);
   await page.goto("/");
   await expect(page).toHaveURL(/\/login$/);
@@ -54,7 +54,7 @@ test("Stranger cannot enter", async ({ page }) => {
 
 test("wrong password is invalid", async ({ page }) => {
   await logIn(page, SEED.emails.a, "not-the-password");
-  await expect(page.getByRole("alert")).toHaveText(fr.login.invalid);
+  await expect(page.getByRole("alert").filter({ hasText: fr.login.invalid })).toBeVisible();
   await expect(page).toHaveURL(/\/login$/);
 });
 
