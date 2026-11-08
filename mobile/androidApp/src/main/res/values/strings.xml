@@ -1,5 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">OpenLove</string>
-    <string name="home_placeholder">Bienvenue sur OpenLove</string>
+    <string name="pairing_title">Appairer avec votre instance</string>
+    <string name="pairing_scan">Scanner le QR code</string>
+    <string name="pairing_scan_hint">Sur le site, ouvrez Réglages puis Appairer l\'app Android.</string>
+    <string name="pairing_manual">Se connecter sans QR code</string>
+    <string name="pairing_instance_url">Adresse de l\'instance</string>
+    <string name="pairing_email">E-mail</string>
+    <string name="pairing_password">Mot de passe</string>
+    <string name="pairing_submit">Se connecter</string>
+    <string name="error_code_expired">Code expiré. Affichez un nouveau QR code depuis les réglages.</string>
+    <string name="error_bad_credentials">E-mail ou mot de passe incorrect.</string>
+    <string name="error_not_member">Ce compte ne fait pas partie de ce couple.</string>
+    <string name="error_rate_limited">Trop de tentatives. Réessayez dans quelques minutes.</string>
+    <string name="error_invalid_link">Adresse ou QR code invalide.</string>
+    <string name="error_unreachable">Instance injoignable. Vérifiez votre connexion.</string>
+    <string name="retry">Réessayer</string>
+    <string name="home_milestone_title">Ensemble depuis</string>
+    <string name="home_upcoming_title">Prochaine date</string>
+    <string name="home_upcoming_none">Aucune date prévue</string>
+    <string name="home_upcoming_today">aujourd\'hui</string>
+    <plurals name="home_total_days">
+        <item quantity="one">%d jour</item>
+        <item quantity="many">%d jours</item>
+        <item quantity="other">%d jours</item>
+    </plurals>
+    <plurals name="home_upcoming_in_days">
+        <item quantity="one">dans %d jour</item>
+        <item quantity="many">dans %d jours</item>
+        <item quantity="other">dans %d jours</item>
+    </plurals>
 </resources>

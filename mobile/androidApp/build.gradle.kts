@@ -68,6 +68,7 @@ dependencies {
     implementation(project(":shared"))
     implementation(libs.datastore.core)
     implementation(libs.tink.android)
+    implementation(libs.play.services.code.scanner)
 
     testImplementation(libs.junit)
     testImplementation(libs.ktor.client.mock)
