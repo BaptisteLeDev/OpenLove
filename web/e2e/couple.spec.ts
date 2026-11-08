@@ -10,7 +10,9 @@ test.beforeAll(async () => {
   const up =
     !!url &&
     !!anonKey &&
-    (await fetch(`${url}/auth/v1/health`, { headers: { apikey: anonKey } }).then(
+    (await fetch(`${url}/auth/v1/health`, {
+      headers: { apikey: anonKey },
+    }).then(
       (r) => r.ok,
       () => false,
     ));
@@ -30,6 +32,9 @@ test("Partenaire logs in on web", async ({ page }) => {
   await expect(page).toHaveURL(/\/login$/);
   await logIn(page, SEED.emails.a);
   await expect(page).toHaveURL(/\/$/);
+  await expect(
+    page.getByRole("heading", { name: `${SEED.names.a} & ${SEED.names.b}` }),
+  ).toBeVisible();
   await expect(page.getByText(fr.home.milestone.title)).toBeVisible();
   await expect(page.getByText(/\d jours/).first()).toBeVisible();
   await expect(page.getByText(SEED.specialDates.shared)).toBeVisible();

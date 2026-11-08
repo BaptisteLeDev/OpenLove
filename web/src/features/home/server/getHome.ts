@@ -25,3 +25,16 @@ export async function getHome(
     upcomingDate: upcomingDate(dates.data, today),
   };
 }
+
+export async function getPartnerNames(
+  sb: SupabaseClient,
+  coupleId: string,
+): Promise<{ a: string; b: string }> {
+  const { data, error } = await sb
+    .from("couples")
+    .select("partner_a_name, partner_b_name")
+    .eq("id", coupleId)
+    .single();
+  if (error) throw error;
+  return { a: data.partner_a_name, b: data.partner_b_name };
+}

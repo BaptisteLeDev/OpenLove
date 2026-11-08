@@ -72,6 +72,7 @@
     }
   },
   "home": {
+    "partners": "{a} & {b}",
     "logout": "Se déconnecter",
     "settings": "Réglages",
     "messages": "Messages",
