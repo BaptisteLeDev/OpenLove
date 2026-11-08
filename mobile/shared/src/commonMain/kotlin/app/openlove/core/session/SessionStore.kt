@@ -23,16 +23,17 @@ data class PairingLink(
     companion object {
         private const val PREFIX = "openlove://pair?"
 
-        fun parse(raw: String): PairingLink? {
-            if (!raw.startsWith(PREFIX)) return null
-            val params =
-                raw.removePrefix(PREFIX).split('&').associate {
-                    it.substringBefore('=').decodeURLQueryComponent() to
-                        it.substringAfter('=', "").decodeURLQueryComponent()
-                }
-            val code = params["code"]?.takeIf { it.isNotEmpty() } ?: return null
-            return instanceUrl(params["instance"] ?: return null)?.let { PairingLink(it, code) }
-        }
+        fun parse(raw: String): PairingLink? =
+            runCatching {
+                if (!raw.startsWith(PREFIX)) return@runCatching null
+                val params =
+                    raw.removePrefix(PREFIX).split('&').associate {
+                        it.substringBefore('=').decodeURLQueryComponent() to
+                            it.substringAfter('=', "").decodeURLQueryComponent()
+                    }
+                val code = params["code"]?.takeIf { it.isNotEmpty() } ?: return@runCatching null
+                instanceUrl(params["instance"] ?: return@runCatching null)?.let { PairingLink(it, code) }
+            }.getOrNull()
 
         fun instanceUrl(raw: String): String? {
             val url = raw.trim().trimEnd('/')

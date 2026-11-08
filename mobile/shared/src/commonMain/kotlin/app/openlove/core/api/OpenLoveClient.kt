@@ -91,7 +91,7 @@ class OpenLoveClient(
 
     private suspend fun refresh(stale: StoredSession): StoredSession =
         refreshLock.withLock {
-            val now = current()
+            val now = store.read() ?: throw ApiException(401, "unauthorized", "session expired")
             if (now.session.accessToken != stale.session.accessToken) return now
             try {
                 val session: Session =

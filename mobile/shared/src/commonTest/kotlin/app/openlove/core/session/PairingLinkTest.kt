@@ -20,6 +20,7 @@ class PairingLinkTest {
             "openlove://other?instance=https%3A%2F%2Fa.b&code=x",
             "openlove://pair?instance=https%3A%2F%2Fa.b",
             "openlove://pair?instance=ftp%3A%2F%2Fa.b&code=x",
+            "openlove://pair?instance=https%3A%2F%2Fa.b&code=%zz",
             "garbage",
         ).forEach { assertNull(PairingLink.parse(it), it) }
     }

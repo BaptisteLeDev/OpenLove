@@ -153,6 +153,24 @@ class OpenLoveClientTest {
         }
 
     @Test
+    fun parallelCallsBothGet401WhenRefreshFails() =
+        runTest {
+            val gate = CompletableDeferred<Unit>()
+            var first401 = 0
+            val c =
+                client(paired) {
+                    if (it.url.encodedPath != "/api/session/refresh") {
+                        if (++first401 == 2) gate.complete(Unit)
+                        gate.await()
+                    }
+                    reply(HttpStatusCode.Unauthorized, UNAUTHORIZED)
+                }
+            listOf(async { runCatching { c.home() } }, async { runCatching { c.home() } }).awaitAll().forEach {
+                assertEquals(401, (it.exceptionOrNull() as ApiException).status)
+            }
+        }
+
+    @Test
     fun errorEnvelopeBecomesApiException() =
         runTest {
             val store = FakeSessionStore()
