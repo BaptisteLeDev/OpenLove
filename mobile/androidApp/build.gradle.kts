@@ -66,6 +66,9 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.activity.compose)
     implementation(project(":shared"))
+    implementation(libs.datastore.core)
+    implementation(libs.tink.android)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }
