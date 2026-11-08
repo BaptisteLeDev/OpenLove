@@ -10,7 +10,9 @@ test.beforeAll(async () => {
   const up =
     !!url &&
     !!anonKey &&
-    (await fetch(`${url}/auth/v1/health`, { headers: { apikey: anonKey } }).then(
+    (await fetch(`${url}/auth/v1/health`, {
+      headers: { apikey: anonKey },
+    }).then(
       (r) => r.ok,
       () => false,
     ));
@@ -30,6 +32,9 @@ test("Partenaire logs in on web", async ({ page }) => {
   await expect(page).toHaveURL(/\/login$/);
   await logIn(page, SEED.emails.a);
   await expect(page).toHaveURL(/\/$/);
+  await expect(
+    page.getByRole("heading", { name: `${SEED.names.a} & ${SEED.names.b}` }),
+  ).toBeVisible();
   await expect(page.getByText(fr.home.milestone.title)).toBeVisible();
   await expect(page.getByText(/\d jours/).first()).toBeVisible();
   await expect(page.getByText(SEED.specialDates.shared)).toBeVisible();
@@ -40,7 +45,7 @@ test("Partenaire logs in on web", async ({ page }) => {
 
 test("Stranger cannot enter", async ({ page }) => {
   await logIn(page, SEED.emails.stranger);
-  await expect(page.getByRole("alert")).toHaveText(fr.login.refused);
+  await expect(page.getByRole("alert").filter({ hasText: fr.login.refused })).toBeVisible();
   await expect(page).toHaveURL(/\/login$/);
   await page.goto("/");
   await expect(page).toHaveURL(/\/login$/);
@@ -49,6 +54,11 @@ test("Stranger cannot enter", async ({ page }) => {
 
 test("wrong password is invalid", async ({ page }) => {
   await logIn(page, SEED.emails.a, "not-the-password");
-  await expect(page.getByRole("alert")).toHaveText(fr.login.invalid);
+  await expect(page.getByRole("alert").filter({ hasText: fr.login.invalid })).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
+});
+
+test("/setup once a Couple exists redirects to /login", async ({ page }) => {
+  await page.goto("/setup");
   await expect(page).toHaveURL(/\/login$/);
 });

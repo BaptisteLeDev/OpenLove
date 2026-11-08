@@ -24,7 +24,7 @@ test("invalid body -> 400 before the server module runs", async () => {
 });
 
 test("refused exchange -> 401 envelope without echoing the code or email", async () => {
-  const code = "pairing-code-0123456789";
+  const code = "pairing-code-abcdef";
   vi.mocked(exchangePairingCode).mockRejectedValueOnce(
     new ApiError(401, "unauthorized", "invalid pairing code"),
   );
@@ -39,7 +39,7 @@ test("refused exchange -> 401 envelope without echoing the code or email", async
 test("success -> 200 envelope with the session", async () => {
   const session = { accessToken: "a", refreshToken: "r", expiresAt: 1798761600 };
   vi.mocked(exchangePairingCode).mockResolvedValueOnce(session);
-  const res = await post({ code: "pairing-code-0123456789" });
+  const res = await post({ code: "pairing-code-abcdef" });
   expect(res.status).toBe(200);
   expect((await res.json()).data).toEqual(session);
 });

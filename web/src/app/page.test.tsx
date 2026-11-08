@@ -9,6 +9,7 @@ import HomePage from "./page";
 const sb = { tag: "sb" };
 const partnerOf = vi.fn();
 const getHome = vi.fn();
+const getPartnerNames = vi.fn();
 
 vi.mock("@/shared/supabase/server", () => ({
   serverClient: async () => sb,
@@ -16,6 +17,7 @@ vi.mock("@/shared/supabase/server", () => ({
 }));
 vi.mock("@/features/home/server/getHome", () => ({
   getHome: (...a: unknown[]) => getHome(...a),
+  getPartnerNames: (...a: unknown[]) => getPartnerNames(...a),
 }));
 vi.mock("@/features/couple/server/auth", () => ({ signOut: vi.fn() }));
 vi.mock("next/navigation", () => ({
@@ -34,12 +36,14 @@ beforeEach(() => {
     milestone: { years: 6, months: 8, days: 5, totalDays: 2439 },
     upcomingDate: null,
   });
+  getPartnerNames.mockResolvedValue({ a: "Alex", b: "Sam" });
 });
 
 test("not a couple member -> redirect to /login", async () => {
   partnerOf.mockResolvedValue({ ok: false, code: "not_couple_member" });
   await expect(HomePage()).rejects.toThrow("redirect:/login");
   expect(getHome).not.toHaveBeenCalled();
+  expect(getPartnerNames).not.toHaveBeenCalled();
 });
 
 test("member -> Compteur, Prochaine date and logout button", async () => {
@@ -53,6 +57,8 @@ test("member -> Compteur, Prochaine date and logout button", async () => {
     </NextIntlClientProvider>,
   );
   expect(getHome).toHaveBeenCalledWith(sb, "c1");
+  expect(getPartnerNames).toHaveBeenCalledWith(sb, "c1");
+  expect(screen.getByRole("heading", { level: 1 }).textContent).toBe("Alex & Sam");
   expect(screen.getByText(fr.home.milestone.title)).toBeTruthy();
   expect(screen.getByText(fr.home.upcomingDate.title)).toBeTruthy();
   expect(screen.getByRole("button", { name: fr.home.logout })).toBeTruthy();
