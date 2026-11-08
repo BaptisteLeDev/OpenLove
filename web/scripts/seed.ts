@@ -8,6 +8,8 @@ export const SEED = {
     stranger: "stranger@example.com",
   },
   startDate: "2020-02-14",
+  names: { a: "Alex", b: "Sam" },
+  seed: "#8f3f5a",
   specialDates: { shared: "Anniversaire de rencontre", private: "Surprise de partner_b" },
 } as const;
 
@@ -43,15 +45,23 @@ export async function seed(admin: SupabaseClient): Promise<{ coupleId: string }>
 
   const existing = await admin.from("couple_members").select("couple_id").eq("user_id", a);
   if (existing.error) throw existing.error;
+  const branding = {
+    partner_a_name: SEED.names.a,
+    partner_b_name: SEED.names.b,
+    seed: SEED.seed,
+  };
   let coupleId: string | undefined = existing.data[0]?.couple_id;
   if (!coupleId) {
     const couple = await admin
       .from("couples")
-      .insert({ start_date: SEED.startDate })
+      .insert({ ...branding, start_date: SEED.startDate })
       .select("id")
       .single();
     if (couple.error) throw couple.error;
     coupleId = couple.data.id as string;
+  } else {
+    const updated = await admin.from("couples").update(branding).eq("id", coupleId);
+    if (updated.error) throw updated.error;
   }
   const members = await admin.from("couple_members").upsert([
     { user_id: a, couple_id: coupleId, role: "partner_a" },

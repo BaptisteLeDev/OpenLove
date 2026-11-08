@@ -36,7 +36,16 @@ async function otherCouple(admin: SupabaseClient): Promise<string> {
   const userId = await ensureUser(admin, OTHER);
   const member = await admin.from("couple_members").select("couple_id").eq("user_id", userId);
   if (member.data?.[0]) return member.data[0].couple_id;
-  const couple = await admin.from("couples").insert({ start_date: "2021-06-01" }).select().single();
+  const couple = await admin
+    .from("couples")
+    .insert({
+      start_date: "2021-06-01",
+      partner_a_name: "Robin",
+      partner_b_name: "Jo",
+      seed: "#4f6f8a",
+    })
+    .select()
+    .single();
   if (couple.error) throw couple.error;
   const ins = await admin
     .from("couple_members")
