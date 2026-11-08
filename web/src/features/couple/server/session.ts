@@ -55,7 +55,7 @@ export async function refreshSession({ refreshToken }: RefreshRequest): Promise<
     refresh_token: refreshToken,
   });
   if (error) {
-    // Android wipes its session on 401: only a refused token may say so, not an Auth outage.
+    // Android wipes session on 401: refused token only, never Auth outage.
     if (!isAuthApiError(error) || error.status >= 500) throw error;
     if (error.status === 429) throw new ApiError(429, "rate_limited", "too many attempts");
     throw new ApiError(401, "unauthorized", "session expired");
